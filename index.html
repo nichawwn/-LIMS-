@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบสนับสนุนการวินิจฉัยโรคและการเก็บตัวอย่าง (ศวพ. ภาคเหนือตอนบน)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Sarabun -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; }
+            .print-card { border: 1px solid #cbd5e1 !important; box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-800 p-2.5 rounded-xl border border-blue-700 shadow-inner">
+                    <i class="fa-solid fa-microscope text-2xl text-blue-300"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-wide">ศูนย์วิจัยและพัฒนาการสัตวแพทย์ภาคเหนือตอนบน</h1>
+                    <p class="text-xs md:text-sm text-blue-200">ระบบสนับสนุนการวินิจฉัยโรค คัดกรองตัวอย่าง และตรวจสอบขีดความสามารถ LIMS ภาคสนาม</p>
+                </div>
+            </div>
+            <div class="mt-3 md:mt-0 flex items-center space-x-2 bg-blue-800/80 px-3 py-1.5 rounded-lg border border-blue-700 text-xs text-blue-100">
+                <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                <span>อ้างอิงข้อมูล: ประกาศ FQS-701-04 (112 รายการครบถ้วน)</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm no-print">
+        <div class="max-w-7xl mx-auto px-4 flex space-x-1 md:space-x-4 overflow-x-auto py-2">
+            <button onclick="switchTab('tab1')" id="btn-tab1" class="tab-btn px-4 py-2 rounded-lg font-medium text-sm flex items-center space-x-2 transition bg-blue-600 text-white shadow-sm shrink-0">
+                <i class="fa-solid fa-stethoscope"></i>
+                <span>1. คัดกรองโรค & รายการตัวอย่างส่งตรวจ</span>
+            </button>
+            <button onclick="switchTab('tab2')" id="btn-tab2" class="tab-btn px-4 py-2 rounded-lg font-medium text-sm flex items-center space-x-2 transition text-slate-600 hover:bg-slate-100 shrink-0">
+                <i class="fa-solid fa-table-list"></i>
+                <span>2. ขีดความสามารถ LIMS (ครบ 112 รายการ)</span>
+            </button>
+            <button onclick="switchTab('tab3')" id="btn-tab3" class="tab-btn px-4 py-2 rounded-lg font-medium text-sm flex items-center space-x-2 transition text-slate-600 hover:bg-slate-100 shrink-0">
+                <i class="fa-solid fa-book-medical"></i>
+                <span>3. คู่มือการเก็บตัวอย่าง</span>
+            </button>
+            <button onclick="switchTab('tab4')" id="btn-tab4" class="tab-btn px-4 py-2 rounded-lg font-medium text-sm flex items-center space-x-2 transition text-slate-600 hover:bg-slate-100 shrink-0">
+                <i class="fa-solid fa-clipboard-check"></i>
+                <span>4. เกณฑ์ LIMS & สินค้าปศุสัตว์</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- TAB 1: Differential Diagnosis & Consolidated Sample Summary -->
+        <div id="tab1" class="tab-content active space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="bg-blue-100 text-blue-700 p-2.5 rounded-xl">
+                        <i class="fa-solid fa-filter-circle-dollar text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">ระบบช่วยคัดกรองโรค (Differential Diagnosis Database) สำหรับสัตวแพทย์ลงพื้นที่</h2>
+                        <p class="text-xs text-slate-500">เลือกชนิดสัตว์และระบบอาการที่พบ เพื่อคัดกรองโรคที่มีโอกาสเกิดขึ้น และรวบรวมรายการตัวอย่างที่ต้องเตรียมส่งพร้อมวิธีเก็บรักษา</p>
+                    </div>
+                </div>
+
+                <!-- Filters Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">1. เลือกชนิดสัตว์:</label>
+                        <select id="speciesFilter" onchange="filterDiseases()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="">-- ทุกชนิดสัตว์ --</option>
+                            <option value="สุกร">สุกร (Swine)</option>
+                            <option value="สัตว์เคี้ยวเอื้อง">สัตว์เคี้ยวเอื้อง (Ruminants: โค กระบือ แพะ แกะ)</option>
+                            <option value="สัตว์ปีก">สัตว์ปีก (Poultry)</option>
+                            <option value="ม้า">ม้า (Equine)</option>
+                            <option value="ช้าง">ช้าง (Elephant)</option>
+                            <option value="สัตว์เลี้ยงลูกด้วยนม">สัตว์เลี้ยงลูกด้วยนม / สัตว์ป่า / ทั่วไป</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">2. เลือกระบบอาการที่พบ (ระบบที่ 1):</label>
+                        <select id="systemFilter" onchange="filterDiseases()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="">-- ไม่ระบุ / ทุกระบบ --</option>
+                            <option value="เลือด">ระบบเลือด / โลหิตวิทยา / ซีรัม / ไหลเวียนเลือด</option>
+                            <option value="ทางเดินหายใจ">ระบบทางเดินหายใจ / ปอด / หลอดลม</option>
+                            <option value="ผิวหนัง">ผิวหนัง / ตุ่มแผล / กีบ / สะเก็ด</option>
+                            <option value="สืบพันธุ์">ระบบสืบพันธุ์ / แท้ง / มัมมี่</option>
+                            <option value="ประสาท">ระบบประสาท / ชัก / อัมพาต / คอบิด</option>
+                            <option value="ทางเดินอาหาร">ระบบทางเดินอาหาร / ท้องเสีย / อาเจียน</option>
+                            <option value="ช่องปาก">ช่องปาก / น้ำลายไหล / ตุ่มที่ปาก</option>
+                            <option value="กระดูกและกล้ามเนื้อ">ระบบกระดูกและกล้ามเนื้อ / ข้ออักเสบ / ขาเจ็บ</option>
+                            <option value="เต้านม">เต้านม / เต้านมอักเสบ</option>
+                            <option value="ไต">ไต / ระบบทางเดินปัสสาวะ</option>
+                            <option value="เนื้องอก">เนื้องอก / ก้อนเนื้อ</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">3. เลือกระบบอาการร่วม (ระบบที่ 2 - ถ้ามี):</label>
+                        <select id="systemFilter2" onchange="filterDiseases()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="">-- ไม่ระบุ (เลือก 1 ระบบ) --</option>
+                            <option value="เลือด">ระบบเลือด / โลหิตวิทยา / ซีรัม / ไหลเวียนเลือด</option>
+                            <option value="ทางเดินหายใจ">ระบบทางเดินหายใจ / ปอด / หลอดลม</option>
+                            <option value="ผิวหนัง">ผิวหนัง / ตุ่มแผล / กีบ / สะเก็ด</option>
+                            <option value="สืบพันธุ์">ระบบสืบพันธุ์ / แท้ง / มัมมี่</option>
+                            <option value="ประสาท">ระบบประสาท / ชัก / อัมพาต / คอบิด</option>
+                            <option value="ทางเดินอาหาร">ระบบทางเดินอาหาร / ท้องเสีย / อาเจียน</option>
+                            <option value="ช่องปาก">ช่องปาก / น้ำลายไหล / ตุ่มที่ปาก</option>
+                            <option value="กระดูกและกล้ามเนื้อ">ระบบกระดูกและกล้ามเนื้อ / ข้ออักเสบ / ขาเจ็บ</option>
+                            <option value="เต้านม">เต้านม / เต้านมอักเสบ</option>
+                            <option value="ไต">ไต / ระบบทางเดินปัสสาวะ</option>
+                            <option value="เนื้องอก">เนื้องอก / ก้อนเนื้อ</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Container -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left 2 Cols: Matched Diseases -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800 text-base flex items-center space-x-2">
+                            <i class="fa-solid fa-list-check text-blue-600"></i>
+                            <span>โรคที่มีโอกาสพบตามเงื่อนไข (<span id="matchCount">0</span> โรค)</span>
+                        </h3>
+                        <button onclick="resetFilters()" class="text-xs text-blue-600 hover:underline flex items-center space-x-1">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>ล้างตัวกรอง</span>
+                        </button>
+                    </div>
+
+                    <div id="diseaseResultsList" class="space-y-3">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <!-- Right Col: Consolidated Sample Summary & Action Card -->
+                <div class="space-y-4">
+                    <div class="bg-gradient-to-br from-blue-900 to-indigo-900 text-white rounded-2xl p-5 shadow-sm sticky top-20">
+                        <div class="flex items-center space-x-2 mb-3">
+                            <i class="fa-solid fa-boxes-packing text-xl text-blue-300"></i>
+                            <h3 class="font-bold text-base">รายการตัวอย่างที่ต้องเตรียมส่ง</h3>
+                        </div>
+                        <p class="text-xs text-blue-200 mb-4">รวบรวมและรวมประเภทตัวอย่างชนิดเดียวกัน ตัดเหลือเพียง 1 รายการ พร้อมวิธีเก็บรักษา/ขนส่ง</p>
+                        
+                        <div id="consolidatedSummary" class="bg-white/10 rounded-xl p-3 text-xs text-blue-100 space-y-2 mb-4 max-h-96 overflow-y-auto border border-white/10">
+                            <p class="italic text-blue-300">กรุณาเลือกชนิดสัตว์และอาการด้านซ้าย เพื่อแสดงรายการตัวอย่างที่ต้องเตรียมส่ง...</p>
+                        </div>
+
+                        <div class="pt-2 border-t border-blue-700/60 text-[11px] text-blue-300 text-center bg-blue-950/40 p-2 rounded-lg">
+                            <i class="fa-solid fa-circle-info mr-1"></i> อ้างอิงประกาศขีดความสามารถ ศวพ. ภาคเหนือตอนบน
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: LIMS Capability Table (112 Items) -->
+        <div id="tab2" class="tab-content space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">ประกาศขีดความสามารถห้องปฏิบัติการ ศวพ. ภาคเหนือตอนบน (ครบทั้ง 112 รายการ)</h2>
+                        <p class="text-xs text-slate-500">อ้างอิงประกาศ FQS-701-04 ข้อกำหนดชนิดตัวอย่าง การขนส่ง วิธีทดสอบ และระยะเวลาดำเนินการ (TAT)</p>
+                        <a href="https://niah.dld.go.th/index.php/th/service-office8/lab-com/lab-com-cap" target="_blank" class="inline-flex items-center space-x-1.5 text-xs text-blue-600 hover:text-blue-800 font-semibold mt-1.5 underline">
+                            <i class="fa-solid fa-link text-[10px]"></i>
+                            <span>ลิงก์เอกสารอ้างอิงขีดความสามารถห้องปฏิบัติการ ศวพ. ภาคเหนือตอนบน (NIAH DLD)</span>
+                        </a>
+                    </div>
+                    <div class="w-full md:w-72">
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                <i class="fa-solid fa-search"></i>
+                            </span>
+                            <input type="text" id="limsSearch" onkeyup="searchLimsTable()" placeholder="ค้นหารายการตรวจ, โรค, หรือห้องแล็บ..." class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LIMS Table Wrapper -->
+                <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 uppercase font-semibold text-[11px] border-b border-slate-200">
+                                <th class="p-3 w-12">ที่</th>
+                                <th class="p-3">ห้องปฏิบัติการ</th>
+                                <th class="p-3">กลุ่มสัตว์ / หมวด</th>
+                                <th class="p-3">โรค / รายการตรวจ</th>
+                                <th class="p-3">ชนิดตัวอย่าง</th>
+                                <th class="p-3">การเก็บรักษา / นำส่ง</th>
+                                <th class="p-3">วิธีทดสอบ / เครื่องมือ</th>
+                                <th class="p-3">ระยะเวลา (TAT)</th>
+                                <th class="p-3">มาตรฐาน ISO 17025</th>
+                            </tr>
+                        </thead>
+                        <tbody id="limsTableBody" class="divide-y divide-slate-200 text-slate-700">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Standard Guidelines -->
+        <div id="tab3" class="tab-content space-y-6">
+            <!-- Infographics Section -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-indigo-100 text-indigo-700 p-2.5 rounded-xl">
+                        <i class="fa-solid fa-images text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">อินโฟกราฟิกภาพประกอบ: แนวทางการเก็บตัวอย่างและชุดอุปกรณ์มาตรฐานภาคสนาม</h2>
+                        <p class="text-xs text-slate-500">ภาพประกอบสรุปขั้นตอนการเก็บรักษาตัวอย่าง และชุดอุปกรณ์มาตรฐานการเก็บตัวอย่างสำหรับสัตวแพทย์และผู้ปฏิบัติงาน</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Column 1: แนวทางการเก็บและส่งตัวอย่างฯ -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                        <h3 class="font-bold text-slate-800 text-sm flex items-center">
+                            <i class="fa-solid fa-file-image text-indigo-600 mr-2"></i>แนวทางการเก็บและส่งตัวอย่างทางห้องปฏิบัติการ
+                        </h3>
+                        <div class="rounded-lg overflow-hidden border border-slate-200 bg-white shadow-sm">
+                            <img src="คู่มือเก็บและส่งตัวอย่างทางห้องปฏิบัติการ.png" alt="แนวทางการเก็บและส่งตัวอย่างทางห้องปฏิบัติการ ศวพ. ภาคเหนือตอนบน" class="w-full h-auto object-cover hover:scale-[1.01] transition duration-300 cursor-pointer" onclick="window.open(this.src)">
+                        </div>
+                        <p class="text-[11px] text-slate-500 text-center">คลิกที่รูปภาพเพื่อขยายดูรายละเอียดชัดเจน</p>
+                    </div>
+
+                    <!-- Column 2: Stack of Equipment Images (Standard followed by Field Equipment) -->
+                    <div class="space-y-6">
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                            <h3 class="font-bold text-slate-800 text-sm flex items-center">
+                                <i class="fa-solid fa-toolbox text-emerald-600 mr-2"></i>ชุดอุปกรณ์มาตรฐานการเก็บตัวอย่างโรคสัตว์และสิ่งแวดล้อม
+                            </h3>
+                            <div class="rounded-lg overflow-hidden border border-slate-200 bg-white shadow-sm">
+                                <img src="อุปกรณ์เก็บตัวอย่างโรคสัตว์มาตรฐาน.png" alt="ชุดอุปกรณ์มาตรฐานการเก็บตัวอย่างโรคสัตว์และสิ่งแวดล้อมในพื้นที่" class="w-full h-auto object-cover hover:scale-[1.01] transition duration-300 cursor-pointer" onclick="window.open(this.src)">
+                            </div>
+                            <p class="text-[11px] text-slate-500 text-center">คลิกที่รูปภาพเพื่อขยายดูรายละเอียดชัดเจน</p>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                            <h3 class="font-bold text-slate-800 text-sm flex items-center">
+                                <i class="fa-solid fa-kit-medical text-blue-600 mr-2"></i>ชุดอุปกรณ์เก็บตัวอย่างภาคสนามสำหรับสัตวแพทย์
+                            </h3>
+                            <div class="rounded-lg overflow-hidden border border-slate-200 bg-white shadow-sm">
+                                <img src="ชุดอุปกรณ์เก็บตัวอย่างภาคสนามสัตวแพทย์.png" alt="ชุดอุปกรณ์เก็บตัวอย่างภาคสนามสำหรับสัตวแพทย์และผู้ปฏิบัติงาน" class="w-full h-auto object-cover hover:scale-[1.01] transition duration-300 cursor-pointer" onclick="window.open(this.src)">
+                            </div>
+                            <p class="text-[11px] text-slate-500 text-center">คลิกที่รูปภาพเพื่อขยายดูรายละเอียดชัดเจน</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="bg-indigo-100 text-indigo-700 p-2.5 rounded-xl">
+                        <i class="fa-solid fa-book-medical text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">คู่มือการเก็บตัวอย่างทางห้องปฏิบัติการมาตรฐาน (ศวพ. ภาคเหนือตอนบน)</h2>
+                        <p class="text-xs text-slate-500">แนวทางปฏิบัติสำหรับสัตวแพทย์ลงพื้นที่ กรณีไม่สามารถระบุโรคจำเพาะได้ ครอบคลุมทุกประเภทสิ่งส่งตรวจ</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="guidelinesContainer">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: LIMS Rejection Criteria & Livestock Product Quality -->
+        <div id="tab4" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Rejection Criteria Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="bg-red-100 text-red-700 p-2.5 rounded-xl">
+                            <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-base font-bold text-slate-900">เกณฑ์นโยบายและเงื่อนไขการรับ-ปฏิเสธตัวอย่าง LIMS</h2>
+                            <p class="text-xs text-slate-500">ข้อกำหนดคุณภาพและการปฏิเสธตัวอย่างตามมาตรฐานระบบบริหารคุณภาพ ศวพ. ภาคเหนือตอนบน</p>
+                        </div>
+                    </div>
+                    <div id="rejectionContainer" class="space-y-3">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <!-- Livestock Product Quality Guide Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="bg-emerald-100 text-emerald-700 p-2.5 rounded-xl">
+                            <i class="fa-solid fa-shield-halved text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-base font-bold text-slate-900">คู่มือการเก็บตัวอย่างมาตรฐานคุณภาพสินค้าปศุสัตว์</h2>
+                            <p class="text-xs text-slate-500">น้ำนมดิบ, เนื้อสัตว์, ไข่สด, อาหารสัตว์, น้ำผึ้ง และน้ำทิ้งฟาร์ม/โรงฆ่าสัตว์</p>
+                        </div>
+                    </div>
+                    <div id="productQualityContainer" class="space-y-3">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Infographic Card: Sample Inspection Checklist Guide -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-100 text-blue-700 p-2.5 rounded-xl">
+                        <i class="fa-solid fa-clipboard-check text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">คู่มือเช็กลิสต์ตรวจสอบตัวอย่างก่อนส่งห้องปฏิบัติการ (Sample Inspection Checklist)</h2>
+                        <p class="text-xs text-slate-500">แนวทางการตรวจสอบความถูกต้องของข้อมูล สภาพทางกายภาพ ปริมาณ และการควบคุมอุณหภูมิก่อนนำส่งห้องปฏิบัติการ</p>
+                    </div>
+                </div>
+
+                <div class="max-w-2xl mx-auto bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4">
+                    <div class="rounded-lg overflow-hidden border border-slate-200 bg-white shadow-sm">
+                        <img src="คู่มือตรวจสอบตัวอย่างก่อนส่งห้องปฏิบัติการ.png" alt="คู่มือเช็กลิสต์ตรวจสอบตัวอย่างก่อนส่งห้องปฏิบัติการ" class="w-full h-auto object-cover hover:scale-[1.01] transition duration-300 cursor-pointer" onclick="window.open(this.src)">
+                    </div>
+                    <p class="text-[11px] text-slate-500 text-center">คลิกที่รูปภาพเพื่อขยายดูรายละเอียดเช็กลิสต์การตรวจสอบตัวอย่าง</p>
+                    
+                    <!-- LIMS Login Direct Link Button -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center space-y-2">
+                        <p class="text-xs text-blue-900 font-semibold">เมื่อตรวจสอบความถูกต้องตามเช็กลิสต์เรียบร้อยแล้ว สามารถเข้าสู่ระบบเพื่อบันทึกข้อมูลตัวอย่างได้ทันที</p>
+                        <a href="https://lims.dld.go.th/lims-portal/auth" target="_blank" class="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow transition duration-300">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                            <span>เข้าสู่ระบบ DLD-LIMS (ระบบสารสนเทศห้องปฏิบัติการ)</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 mt-12 border-t border-slate-800 no-print">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <p class="font-semibold text-slate-200">ศูนย์วิจัยและพัฒนาการสัตวแพทย์ภาคเหนือตอนบน (Regional Veterinary Research and Development Center - Upper Northern Region)</p>
+                <p class="text-slate-400 mt-1">กรมปศุสัตว์ กระทรวงเกษตรและสหกรณ์ | เว็บแอปพลิเคชันสนับสนุนการปฏิบัติงานภาคสนาม (VET-LIMS Assistant)</p>
+            </div>
+            <div class="text-right">
+                <p class="text-blue-400 font-medium">มาตรฐานความปลอดภัยระบบห้องปฏิบัติการ ISO/IEC 17025:2017</p>
+                <p class="text-slate-400 mt-1">อ้างอิงระบบสารสนเทศ LIMS: <a href="https://lims.dld.go.th" target="_blank" class="underline hover:text-white">https://lims.dld.go.th</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Data and Application Logic -->
+    <script>
+        const diseaseData = [
+            {
+                        "species": "สุกร",
+                        "system": "เลือด / ผิวหนัง",
+                        "disease": "ASF (อหิวาต์แอฟริกาในสุกร - African Swine Fever)",
+                        "symptoms": "ตายฉับพลัน ไข้สูง จุดเลือดออก ผิวหนังแดงและช้ำ ม้ามโตมาก ต่อมน้ำเหลืองมีเลือดออก ปอดบวมน้ำ น้ำคั่งช่องอก/ช่องท้อง",
+                        "sample": "เลือด EDTA ≥1 ml; อวัยวะ (ปอด ทอนซิล ม้าม ต่อมน้ำเหลือง) ≥5 g; น้ำลาย; ผลิตภัณฑ์สุกร ≥500 g; แช่เย็น (ส่งเกิน 3 วันให้แช่แข็ง)",
+                        "transport": "แช่เย็น 4°C ส่งภายใน 2 วัน (ห้ามผ่าซากในฟาร์มเพื่อป้องกันการแพร่เชื้อ)",
+                        "method": "Real-time PCR / PCR",
+                        "tat": "3 วันทำการ"
+            },
+            {
+                        "species": "สุกร",
+                        "system": "ประสาท / ทางเดินอาหาร / สืบพันธุ์ / เลือด",
+                        "disease": "CSF (อหิวาต์สุกร - Classical Swine Fever)",
+                        "symptoms": "ไข้สูง จุดเลือดออกหลายอวัยวะ เยื่อบุตาอักเสบ ชัก เดินเซ อัมพาต ท้องผูกสลับท้องเสีย แผลเม็ดกระดุมที่ลำไส้ แท้ง มัมมี่",
+                        "sample": "PCR: เลือด EDTA, ซีรัม/พลาสมา/clotted blood, oral fluid, น้ำเชื้อ (≥0.5 ml), อวัยวะ (ทอนซิล ม้าม ไต ต่อมน้ำเหลือง) ≥5 g; NPLA: ซีรัมหรือ clotted blood",
+                        "transport": "แช่เย็น 4°C หรือแช่แข็งสำหรับอวัยวะ",
+                        "method": "Real-time RT-PCR / NPLA",
+                        "tat": "3 วันทำการ"
+            },
+            {
+                        "species": "สุกร",
+                        "system": "สืบพันธุ์ / ทางเดินหายใจ",
+                        "disease": "PRRS (กลุ่มอาการโรคระบบสืบพันธุ์และทางเดินหายใจในสุกร)",
+                        "symptoms": "แม่สุกรแท้งในระยะท้าย มัมมี่ ตายแรกคลอด ลูกหมูหายใจลำบาก ปอดลายหินอ่อน ต่อมน้ำเหลืองบวมโต",
+                        "sample": "PCR: เลือด EDTA, ซีรัม, oral fluid/saliva, น้ำเชื้อ, อวัยวะ (ปอด ทอนซิล ม้าม ต่อมน้ำเหลือง) ≥5 g; ELISA: ซีรัม/พลาสมา",
+                        "transport": "แช่เย็น 4°C ส่งภายใน 24-48 ชม.",
+                        "method": "RT-PCR / ELISA",
+                        "tat": "3 วันทำการ"
+            },
+            {
+                        "species": "สุกร",
+                        "system": "ผิวหนัง / เลือด / สืบพันธุ์",
+                        "disease": "PCV2 (โรคเซอร์โคไวรัส ชนิดที่ 2 / PCVAD)",
+                        "symptoms": "ลูกหมูโตช้า ผอมแคระแกร็น ผิวหนังอักเสบมีสะเก็ด (คล้ายขี้เรื้อนแห้ง) จุดเนื้อตายที่ไต ต่อมน้ำเหลืองขาหนีบโต",
+                        "sample": "เลือด EDTA ≥1 ml; อวัยวะ (ปอด ทอนซิล ต่อมน้ำเหลือง) ≥5 g",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สุกร",
+                        "system": "ประสาท / ทางเดินหายใจ",
+                        "disease": "AD (โรคพิษสุนัขบ้าเทียม / ออจิสกี - Aujeszky's Disease)",
+                        "symptoms": "ชัก กระตุกเกร็ง เยื่อหุ้มสมองอักเสบ หายใจลำบาก จาม ปอดบวมน้ำ จุดเนื้อตายที่ไต",
+                        "sample": "เลือด EDTA ≥1 ml; อวัยวะ (สมอง ทอนซิล ปอด) ≥5 g",
+                        "transport": "แช่เย็น 4°C ส่งภายใน 2 วัน หรือแช่แข็ง",
+                        "method": "PCR",
+                        "tat": "3 วันทำการ"
+            },
+            {
+                        "species": "สุกร",
+                        "system": "สืบพันธุ์",
+                        "disease": "PPV (โรคพาร์โวไวรัสในสุกร - Porcine Parvovirus)",
+                        "symptoms": "ลูกแท้ง มัมมี่หลายขนาด ตายแรกคลอด ตัวอ่อนตายในระยะแรก (SMEDI)",
+                        "sample": "เลือด EDTA; อวัยวะลูกกรอก/ลูกตายแรกคลอด ≥5 g",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สุกร",
+                        "system": "ทางเดินอาหาร",
+                        "disease": "PED (โรคท้องร่วงติดต่อในสุกร - Porcine Epidemic Diarrhea)",
+                        "symptoms": "ท้องเสียรุนแรง อุจจาระสีเหลืองปนเขียว อาเจียน ลำไส้โปร่งใส",
+                        "sample": "rectal swab ใน VTM 0.3–0.5 ml; อุจจาระ 5 g; อวัยวะ (ลำไส้เล็ก) ≥5 g",
+                        "transport": "แช่เย็น 4°C ใน Transport media",
+                        "method": "RT-PCR / Real-time RT-PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สุกร",
+                        "system": "ประสาท / ทางเดินหายใจ",
+                        "disease": "FMD (โรคปากและเท้าเปื่อย - Foot and Mouth Disease)",
+                        "symptoms": "มีไข้สูง เกิดตุ่มใส เดินลำบาก ซึม และเบื่ออาหาร",
+                        "sample": "อวัยวะที่มีวิการ (เยื่อลิ้น เหงือก กีบ เต้านม กล้ามเนื้อหัวใจ) แช่ในกลีเซอรีนบัฟเฟอร์ ส่งภายใน 5 วันโดยไม่ต้องแช่เย็น (ถ้าไม่มีให้แช่เย็น/แช่แข็งแล้วส่งทันที); vesicular fluid ดูดด้วยเข็มและ syringe ปลอดเชื้อ แช่เย็นทันที ส่งภายใน 2 วัน",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "PCR",
+                        "tat": "3–5 วันทำการ"
+            },
+            {
+                        "species": "สุกร",
+                        "system": "ประสาท / ทางเดินหายใจ",
+                        "disease": "Nipah",
+                        "symptoms": "มีอาการไอรุนแรง หายใจลำบาก (บางท้องถิ่นเรียกว่า \"โรคไอแห้ง\" หรือ Barking Pig Syndrome) มีอาการทางประสาท เช่น ตัวสั่น ขาอ่อนแรง ชัก และอาจเสียชีวิตได้อย่างรวดเร็ว",
+                        "sample": "เลือด EDTA, น้ำไขสันหลัง 0.3–0.5 ml, สมอง ไขสันหลัง",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "PCR",
+                        "tat": "ไม่เกิน 12 วันทำการ"
+            },
+            {
+                        "species": "สุกร",
+                        "system": "ทางเดินหายใจ/ กระดูกและกล้ามเนื้อ",
+                        "disease": "Streptococcus suis (โรคไข้หูดับ)",
+                        "symptoms": "เยื่อหุ้มสมองอักเสบ ข้ออักเสบ เยื่อหุ้มหัวใจอักเสบ โลหิตเป็นพิษ",
+                        "sample": "สมอง, ข้อต่อ, เลือดสด, ทอนซิล",
+                        "transport": "แช่เย็น 4°C (ส่งภายใน 24 ชม.)",
+                        "method": "Bacterial Isolation / PCR",
+                        "tat": "-"
+            },
+            {
+                        "species": "สัตว์เคี้ยวเอื้อง",
+                        "system": "ทางเดินหายใจ/ กระดูกและกล้ามเนื้อ/ เลือด/ ผิวหนัง/ เต้านม / ช่องปาก",
+                        "disease": "FMD (โรคปากและเท้าเปื่อย - Foot and Mouth Disease)",
+                        "symptoms": "ไข้สูง ตุ่มพองใสที่ปาก ลิ้น เหงือก ระหว่างช่องกีบ ไรกีบ เต้านม น้ำลายไหล เดินกะเผลก",
+                        "sample": "เนื้อเยื่อแผล (ลิ้น/กีบ/เต้านม) ขนาด ≥1 กรัม, ซีรัม, หัวใจสัตว์ตาย (Tiger heart)",
+                        "transport": "ใส่ในน้ำยากลีเซอรีนบัฟเฟอร์ 50% แช่เย็นตลอดเวลา",
+                        "method": "Real-time RT-PCR / LP-ELISA",
+                        "tat": "PCR 3–5 วัน; NSP-ELISA ไม่เกิน 10 วัน; LP-ELISA 10/20/30/50 วัน (ตามจำนวนตัวอย่างต่อวัน)"
+            },
+            {
+                        "species": "สัตว์เคี้ยวเอื้อง",
+                        "system": "ผิวหนัง/ เลือด",
+                        "disease": "Lumpy Skin Disease (โรคลัมปี สกิน - LSD)",
+                        "symptoms": "ไข้สูง ตุ่มนูนแข็งทั่วผิวหนัง (0.5-5 ซม.) ต่อมน้ำเหลืองโต แผลในทางเดินอาหาร",
+                        "sample": "สะเก็ดแผล / ตุ่มนูนผิวหนัง (ขูดลึกถึงชั้นใต้ผิวหนัง), เลือด EDTA",
+                        "transport": "ถุงซิปสะอาด หรือ VTM / กลีเซอรีนบัฟเฟอร์ แช่เย็น",
+                        "method": "Real-time PCR",
+                        "tat": "PCR 5 วัน; ELISA 5–7 วัน"
+            },
+            {
+                        "species": "สัตว์เคี้ยวเอื้อง",
+                        "system": "ทางเดินหายใจ/ เลือด",
+                        "disease": "Haemorrhagic Septicaemia (โรคคอบวม)",
+                        "symptoms": "ไข้สูง หอบลึก คอและลิ้นบวมน้ำ (เจลาติน) ท้องอืด ตายเฉียบพลัน",
+                        "sample": "เลือด EDTA, น้ำมูก, ปอด, ม้าม, หลอดลม, หัวใจ, ไต",
+                        "transport": "แช่เย็น 4°C ส่งภายใน 24 ชม.",
+                        "method": "Bacterial Isolation / Multiplex-PCR",
+                        "tat": "-"
+            },
+            {
+                        "species": "สัตว์เคี้ยวเอื้อง",
+                        "system": "เลือด / กระดูกและกล้ามเนื้อ",
+                        "disease": "Black Leg (โรคแบลคเลก / ไข้ขาดำ)",
+                        "symptoms": "ไข้สูง กล้ามเนื้อต้นขาหลัง/สะโพกบวม คลำมีเสียงกรอบแกรบ ตายอย่างรวดเร็ว",
+                        "sample": "กล้ามเนื้อที่มีรอยโรค, น้ำเหลืองจากแผล, เลือด EDTA",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "Conventional PCR",
+                        "tat": "-"
+            },
+            {
+                        "species": "สัตว์เคี้ยวเอื้อง",
+                        "system": "สืบพันธุ์",
+                        "disease": "Brucellosis (โรคแท้งติดต่อ)",
+                        "symptoms": "แม่โคแท้งลูกช่วงกลางถึงปลายของการตั้งท้อง, ตัวผู้อัณฑะอักเสบ",
+                        "sample": "ซีรัม (ตรวจคัดกรอง), รก, ลูกที่แท้ง, น้ำนม",
+                        "transport": "แช่เย็น 4°C สำหรับชิ้นเนื้อ/น้ำนม และซีรัม",
+                        "method": "Rose Bengal Test (RBT) / CFT / Isolation",
+                        "tat": "-"
+            },
+            {
+                        "species": "สัตว์เคี้ยวเอื้อง",
+                        "system": "ทางเดินหายใจ / สืบพันธุ์",
+                        "disease": "IBR / IPV (โรคติดเชื้อไรโนทราไคทิสในโค)",
+                        "symptoms": "ไข้สูง เยื่อบุตาอักเสบ จมูกแดงเป็นเนื้อตาย มีแผลหลุมที่ทางเดินหายใจ แท้ง",
+                        "sample": "Nasal swab, Vaginal swab, อวัยวะรวม (ปอด หลอดลม)",
+                        "transport": "แช่เย็นใน Viral Transport Media",
+                        "method": "PCR / Virus Isolation",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์เคี้ยวเอื้อง",
+                        "system": "ทางเดินอาหาร / สืบพันธุ์ / ประสาท",
+                        "disease": "BVD (โรคไวรัสท้องร่วงในโค - Bovine Viral Diarrhea)",
+                        "symptoms": "ท้องเสีย มีแผลหลุมในช่องปากและทางเดินอาหาร แท้ง สมองน้อยเจริญไม่เต็มที่",
+                        "sample": "ลำไส้, Nasal swab, ซีรัม, อวัยวะรวม",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "RT-PCR / ELISA",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์เคี้ยวเอื้อง",
+                        "system": "กระดูกและกล้ามเนื้อ",
+                        "disease": "BEF (โรคไขสามวัน / Bovine Ephemeral Fever)",
+                        "symptoms": "ไข้สูง ขาแข็ง เดินกระเผลก น้ำในข้อและช่องว่างมีไฟบรินผสมมาก",
+                        "sample": "เลือด EDTA (ช่วงมีไข้สูง)",
+                        "transport": "แช่เย็น 4°C ห้ามแช่แข็ง",
+                        "method": "RT-PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์เคี้ยวเอื้อง",
+                        "system": "ทางเดินหายใจ",
+                        "disease": "BRSV",
+                        "symptoms": "ไอ น้ำมูกไหล หายใจลำบาก ปอดอักเสบกระจายทั่ว ปอดบวมน้ำ ถุงลมโป่งพอง พบ syncytial cells",
+                        "sample": "nasal swab ปอด อวัยวะรวม",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "Real-time RT-PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์เคี้ยวเอื้อง",
+                        "system": "ทางเดินหายใจ",
+                        "disease": "PI3",
+                        "symptoms": "ไข้สูง ไอ น้ำมูกไหล ปอดส่วนต้นด้านล่างแข็งตัว หลอดลมและถุงลมอักเสบ",
+                        "sample": "nasal swab ปอด อวัยวะรวม",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "Real-time RT-PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์เคี้ยวเอื้อง",
+                        "system": "ทางเดินหายใจ / ทางเดินอาหาร/ ช่องปาก",
+                        "disease": "PPR (แพะ แกะ)",
+                        "symptoms": "ไข้สูง น้ำมูกน้ำตาไหล น้ำมูกเหนียวข้น หายใจลำบาก ปอดอักเสบ แผลหลุมในช่องปาก เหงือกอักเสบ ท้องเสีย MT 50–100%",
+                        "sample": "nasal swab ปอด",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "Real-time RT-PCR",
+                        "tat": "3–5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์เคี้ยวเอื้อง",
+                        "system": "ผิวหนัง / ช่องปาก / เต้านม",
+                        "disease": "ORF",
+                        "symptoms": "ตุ่มเล็ก ตุ่มใส ตุ่มแตก แผลหลุมที่ริมฝีปาก ในช่องปาก ลิ้น หัวนม",
+                        "sample": "เนื้อเยื่อเปื่อยยุ้ยรอบรอยโรค",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "Nested PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์เคี้ยวเอื้อง",
+                        "system": "ประสาท / กระดูกและกล้ามเนื้อ / ทางเดินหายใจ / เต้านม",
+                        "disease": "CAE (แพะ)",
+                        "symptoms": "ชัก เดินเซ เป็นอัมพาต ข้อขาอักเสบ ปอดอักเสบ เต้านมอักเสบ ติดต่อผ่านนมแม่",
+                        "sample": "สมอง ปอด น้ำในข้อ อวัยวะรวม",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "Real-time RT-PCR",
+                        "tat": "PCR 5 วัน; ELISA 5–7 วัน"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "ทางเดินหายใจ / ประสาท / ไหลเวียนเลือด / สืบพันธุ์",
+                        "disease": "Avian Influenza (โรคไข้หวัดนก - AI)",
+                        "symptoms": "ตายกะทันหัน จุดเลือดออกที่หน้าแข้ง หงอนเหนียงม่วง คอบิด หายใจลำบาก จุดเลือดออกหลายอวัยวะ หลอดลมและปอดอักเสบ รังไข่อักเสบ",
+                        "sample": "Oropharyngeal swab, Cloacal swab, อวัยวะรวม หลอดลม, ปอด, ม้าม, ไต, เลือด",
+                        "transport": "Viral Transport Media (VTM) แช่เย็น 4°C",
+                        "method": "Real-time RT-PCR / HI test",
+                        "tat": "แยกเชื้อ ≤12 วัน; Real-time RT-PCR ≤5 วัน; HI 12/20/30 วัน (ตามจำนวนตัวอย่าง); ELISA 5 วัน"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "ทางเดินหายใจ / ประสาท / สืบพันธุ์",
+                        "disease": "Newcastle Disease (โรคนิวคาสเซิล - ND)",
+                        "symptoms": "ซึม หายใจลำบาก คอบิด เยื่อบุตาอักเสบ ไข่ผิดรูป ไข่แตกในช่องท้อง",
+                        "sample": "อวัยวะรวม หลอดลม oropharyngeal swab cloacal swab เลือด ซีรัม",
+                        "transport": "Viral Transport Media (VTM) แช่เย็น 4°C",
+                        "method": "Real-time RT-PCR / HA-HI test",
+                        "tat": "แยกเชื้อ ≤12 วัน; Real-time RT-PCR ≤5 วัน; HI 12/20/30 วัน"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "ทางเดินหายใจ / ไต / สืบพันธุ์",
+                        "disease": "Infectious Bronchitis (โรคหลอดลมอักเสบติดต่อ - IB)",
+                        "symptoms": "หลอดลมอักเสบ มีหนองแข็งคล้ายชีส ไตบวม ยูเรทคั่ง ไข่ผิดรูป (ไข่ช้างเหยียบ)",
+                        "sample": "Tracheal swab หลอดลม อวัยวะรวม",
+                        "transport": "Viral Transport Media (VTM) แช่เย็น 4°C",
+                        "method": "RT-PCR",
+                        "tat": "14 วันทำการ"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "ทางเดินหายใจ",
+                        "disease": "Infectious Laryngotracheitis (โรคกล่องเสียงและหลอดลมอักเสบ - ILT)",
+                        "symptoms": "ไอเป็นเลือด แผ่นเนื้อตายในหลอดลม กล่องเสียงอักเสบ",
+                        "sample": "Tracheal swab หลอดลม อวัยวะรวม",
+                        "transport": "Viral Transport Media (VTM) แช่เย็น 4°C",
+                        "method": "PCR",
+                        "tat": "14 วันทำการ"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "ผิวหนัง/ ช่องปาก",
+                        "disease": "Fowl Pox (โรคฝีดาษไก่)",
+                        "symptoms": "ตุ่มนูนสีเหลืองถึงดำที่ผิวหนังบริเวณไร้ขน แผ่นเนื้อตายในช่องปากและคอหอย",
+                        "sample": "สะเก็ดตุ่มผิวหนัง, แผ่นเนื้อตายในช่องปาก",
+                        "transport": "แช่เย็น 4°C หรือแช่แข็ง",
+                        "method": "Nested PCR / Virus Isolation",
+                        "tat": "14 วันทำการ"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "เลือด / ไต",
+                        "disease": "IBD / Gumboro (โรคติดเชื้อบอร์ซา - Infectious Bursal Disease)",
+                        "symptoms": "จุดเลือดออกที่รอยต่อกระเพาะแท้กับกึน ต่อมเบอร์ซ่าบวมอักเสบแล้วฝ่อลีบ ท้องเสียมูกขาว จุดเลือดออกที่รอยต่อกระเพาะแท้กับกึ๋น ไตบวม เลือดออกที่กล้ามเนื้ออก สะโพก น่อง",
+                        "sample": "ต่อมเบอร์ซ่า, อวัยวะรวม",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "RT-PCR / ELISA",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "ประสาท / เลือด/ กระดูกและกล้ามเนื้อ/ เนื้องอก",
+                        "disease": "Marek's Disease (โรคมาริก)",
+                        "symptoms": "เนื้องอกที่รูขุมขน เส้นประสาทส่วนปลายอักเสบ ขาเป๋ มะเร็งต่อมน้ำเหลือง",
+                        "sample": "ก้อนเนื้องอก, เส้นประสาท, อวัยวะรวม",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "PCR / Histopathology",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "เลือด/ ผิวหนัง",
+                        "disease": "CIA (โลหิตจางในไก่)",
+                        "symptoms": "ไก่แตกไซส์ หงอนเหนียงซีด ปลายปีกม่วงช้ำ ผิวหนังอักเสบ ไขกระดูกซีดเหลือง ต่อมไทมัส เบอร์ซา ม้ามฝ่อ",
+                        "sample": "เลือด EDTA 1 ml; อวัยวะ (ตับ ม้าม) ≥5 g",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "เลือด/ เนื้องอก",
+                        "disease": "ALV (มะเร็งเม็ดเลือดขาวในไก่)",
+                        "symptoms": "Lymphoid leucosis พบก้อนชัดเจนกระจายหลายอวัยวะ",
+                        "sample": "เลือด EDTA 1 ml; เนื้องอกหรืออวัยวะ (ตับ ม้าม) ≥5 g",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "Real-time RT-PCR",
+                        "tat": "—"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "สืบพันธุ์",
+                        "disease": "EDS (ไข่ลด)",
+                        "symptoms": "ไข่ลด ไข่มีงวง ไข่เหี่ยว ไข่หนัง ไข่สีจาง ท่อนำไข่อักเสบ แสดงอาการเมื่อเริ่มไข่",
+                        "sample": "cloacal swab; เลือด EDTA 1 ml; อวัยวะ (ลำไส้ ตับ ม้าม) ≥5 g",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "RT-PCR (EDS); เป็ด: Duck EDS (Tembusu-related Flavivirus) RT-PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "ผิวหนัง / ช่องปาก",
+                        "disease": "ฝีดาษไก่ (AvPOX)",
+                        "symptoms": "ตุ่มนูนสีเหลืองถึงดำที่ผิวหนังไร้ขน แผ่นเนื้อตายในช่องปากและคอหอย พบ intracytoplasmic inclusion bodies",
+                        "sample": "swab รอยโรคใน VTM; สะเก็ด/ตุ่มที่ผิวหนัง ปาก หลอดอาหาร ≥5 g",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "เพาะแยกเชื้อ / Nested PCR",
+                        "tat": "14 วันทำการ"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "ทางเดินอาหาร / ประสาท",
+                        "disease": "เป็ด: กาฬโรคเป็ด (DP)",
+                        "symptoms": "ตายกะทันหัน หลอดอาหารอักเสบมีแผลหลุมหรือแผ่นเนื้อตาย ลำไส้มีแผ่นเนื้อตายและแผลเม็ดกระดุม เยื่อบุตาอักเสบ หัวบวมน้ำ ชัก",
+                        "sample": "อวัยวะ (หลอดอาหาร ตับ ม้าม ไต) หรือเยื่อหุ้มตัวอ่อน (CAM) จากไข่เป็ดฟัก ≥5 g",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "ทางเดินอาหาร",
+                        "disease": "เป็ด: DPV (พาร์โวไวรัส)",
+                        "symptoms": "ท้องเสียสีขาวคล้ายแป้ง ลำไส้อักเสบแบบมีพังผืดปกคลุม เยื่อหุ้มตับอักเสบมีไฟบริน ปอดบวม ท้องมาน ตายสูงในเป็ดห่านอายุ <10 วัน",
+                        "sample": "ลำไส้ อวัยวะรวม",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "Real-time PCR (พาร์โวไวรัสในห่านและเป็ดเทศ — Goose and Muscovy duck parvovirus)",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์ปีก",
+                        "system": "ประสาท",
+                        "disease": "เป็ด: DHV (ตับอักเสบในเป็ด)",
+                        "symptoms": "ลูกเป็ด 1–6 สัปดาห์ อกแอ่น ขาเหยียดเกร็ง ชัก คอบิด ตับอักเสบบวมโตมีเลือดออก ไตบวม ม้ามโต",
+                        "sample": "อวัยวะรวม",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "RT-PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "ม้า",
+                        "system": "เลือด/ ทางเดินหายใจ",
+                        "disease": "African Horse Sickness (กาฬโรคแอฟริกาในม้า - AHS)",
+                        "symptoms": "ไข้สูง เยื่อบุตาอักเสบ ใบหน้าบวมน้ำ หายใจลำบาก น้ำท่วมปอด น้ำในช่องอก",
+                        "sample": "อวัยวะรวม (หัวใจ ปอด ม้าม ไต), เลือด EDTA",
+                        "transport": "แช่เย็น 4°C ห้ามแช่แข็งเลือด",
+                        "method": "Real-time RT-PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "ม้า",
+                        "system": "ประสาท / ทางเดินหายใจ",
+                        "disease": "EHV",
+                        "symptoms": "ไข้สูง หลอดเลือดถูกทำลาย ขาหลังอ่อนแรง กลั้นปัสสาวะไม่ได้ หลอดเลือดสมอง/ไขสันหลังอักเสบ น้ำมูก ไอ ปอดอักเสบ",
+                        "sample": "เลือด EDTA,  อวัยวะรวม",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "Nested PCR / Real-time PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "ม้า",
+                        "system": "เลือด",
+                        "disease": "Equine Infectious Anemia (โรคโลหิตจางติดต่อในม้า - EIA)",
+                        "symptoms": "ไข้เป็นๆ หายๆ เยื่อเมือกซีด จุดเลือดออก ม้ามโต ต่อมน้ำเหลืองบวม",
+                        "sample": "เลือด EDTA, ซีรัม, อวัยวะรวม",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "AGID / ELISA / PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "ช้าง",
+                        "system": "เลือด",
+                        "disease": "EEHV (Elephant Endotheliotropic Herpesvirus)",
+                        "symptoms": "จุดเลือดออกในอวัยวะภายใน หลอดเลือดถูกทำลายอย่างรุนแรง หน้าบวม คอบวม บวมน้ำใต้ผิวหนัง",
+                        "sample": "อวัยวะรวม, Oropharyngeal swab",
+                        "transport": "แช่เย็น 4°C",
+                        "method": "Real-time PCR",
+                        "tat": "5 วันทำการ"
+            },
+            {
+                        "species": "สัตว์เลี้ยงลูกด้วยนม",
+                        "system": "เลือด/ ประสาท",
+                        "disease": "Rabies (โรคพิษสุนัขบ้า)",
+                        "symptoms": "คันบริเวณถูกกัด ม่านตาหดตัว ซึม ดุร้าย กัด ไวต่อแสงและเสียง น้ำลายฟูมปาก",
+                        "sample": "สมองสัตว์ (ส่วน Ammon's horn, Medulla oblongata)",
+                        "transport": "แช่เย็นด้วยน้ำแข็ง (ห้ามแช่แข็งจนเนื้อสมองเสียสภาพ)",
+                        "method": "DFA / Real-time RT-PCR (ISO 17025)",
+                        "tat": "3 วันทำการ"
+            }
+        ];
+
+        const limsData = [
+            { lab: "พยาธิวิทยา", group: "ทั่วไป", test: "พยาธิคลินิก", sample: "เลือดในสารกันเลือดแข็ง (หลอดของ ศวพ.ฯ ใส่เลือดได้ 1 cc)", transport: "แช่เย็น ส่งภายใน 12 ชม. ห้ามแช่แข็ง", method: "เครื่องนับเม็ดเลือดอัตโนมัติ และ manual hematology", tat: "1 วันทำการ (10 ตย./วัน)", iso: "-" },
+            { lab: "พยาธิวิทยา", group: "ทั่วไป", test: "การผ่าซาก", sample: "สัตว์ป่วย หรือซาก", transport: "แช่เย็น ส่งภายใน 12 ชม. ห้ามแช่แข็ง", method: "ตรวจด้วยตาเปล่า", tat: "1 วันทำการ", iso: "-" },
+            { lab: "พยาธิวิทยา", group: "ทั่วไป", test: "จุลพยาธิวิทยา", sample: "อวัยวะสด หนาไม่เกิน 1 ซม. (ห้ามใช้อวัยวะที่แช่เย็นหรือแช่แข็ง)", transport: "แช่ 10% buffered formalin ส่งโดยไม่แช่แข็ง", method: "ทำสไลด์เนื้อเยื่อ ตรวจด้วยกล้องจุลทรรศน์", tat: "7 วันทำการ", iso: "-" },
+            { lab: "พยาธิวิทยา", group: "ทั่วไป", test: "การย้อมสีพิเศษ", sample: "อวัยวะสดบริเวณรอยโรค หนาไม่เกิน 1 ซม.", transport: "แช่ 10% buffered formalin ส่งโดยไม่แช่แข็ง", method: "Gram, Acid-fast, PAS", tat: "7–10 วันทำการ", iso: "-" },
+            { lab: "พยาธิวิทยา", group: "ทั่วไป", test: "Immunohistochemistry (IHC)", sample: "อวัยวะสดบริเวณรอยโรค หนาไม่เกิน 1 ซม.", transport: "แช่ 10% buffered formalin ส่งโดยไม่แช่แข็ง", method: "IHC ตรวจด้วยกล้องจุลทรรศน์", tat: "7–10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "สุกร", test: "โรคเยื่อหุ้มปอดอักเสบ (Actinobacillus pleuropneumoniae)", sample: "ปอด", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 3 วัน", method: "เพาะแยกเชื้อ/PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Anthrax (Bacillus anthracis)", sample: "เลือด เนื้อ อวัยวะภายใน กระดูก ไม้พันสำลีชุ่มเลือด ดินที่มีเลือดสัตว์ตาย", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ/Real-time PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Pathogenic E. coli (สร้าง toxin)", sample: "อวัยวะภายใน", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ/PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Melioidosis (Burkholderia pseudomallei)", sample: "หนอง อวัยวะภายใน", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 3 วัน", method: "เพาะแยกเชื้อ/PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Melioidosis — แอนติบอดี", sample: "ซีรัม ≥1 ml ไม่มีเม็ดเลือดแดงแตก", transport: "แช่เย็น ส่งภายใน 5 วัน", method: "IHA", tat: "7 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Klebsiella pneumoniae", sample: "swab อวัยวะภายใน", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Enterococcus spp.", sample: "swab อวัยวะภายใน อุจจาระ", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ/PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "โค กระบือ", test: "เฮโมรายิกเซพติซีเมีย (Pasteurella multocida type B:2)", sample: "อวัยวะภายใน เลือดสด น้ำมูก น้ำลาย ไขกระดูก", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ/Real-time PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Pasteurellosis", sample: "อวัยวะภายใน", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ/PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "สัตว์เคี้ยวเอื้อง", test: "Mannheimia haemolytica", sample: "อวัยวะภายใน", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "โคนม", test: "เต้านมอักเสบ (Mastitis)", sample: "น้ำนม", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "สุกร", test: "ไข้ผิวหนังแดง/ไฟลามทุ่ง (Erysipelothrix rhusiopathiae)", sample: "อวัยวะภายใน ข้อที่อักเสบ", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 3 วัน", method: "เพาะแยกเชื้อ/PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Salmonellosis (Salmonella spp.; ISO 6579-1)", sample: "อวัยวะภายในสัตว์ปีก อุจจาระสัตว์ปีก (≥100 g) Boot swab เนื้อสัตว์ ผลิตภัณฑ์จากสัตว์", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 3 วัน", method: "เพาะแยกเชื้อ*", tat: "7–10 วันทำการ", iso: "ได้รับรอง (10 ตย./สัปดาห์)" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "เป็ด", test: "New duck syndrome (Riemerella anatipestifer)", sample: "อวัยวะภายใน", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Staphylococcus aureus", sample: "swab อวัยวะภายใน", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Streptococcus spp.", sample: "swab อวัยวะภายใน", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "สุกร", test: "ไข้หูดับ (Streptococcus suis)", sample: "swab อวัยวะภายใน สมอง ต่อมทอนซิล เนื้อสัตว์ เลือดสด", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ/PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Colibacillosis (E. coli)", sample: "อวัยวะภายใน อุจจาระ", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 3 วัน", method: "เพาะแยกเชื้อ", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Campylobacter spp.", sample: "ลำไส้", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ/PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ไก่", test: "หวัดหน้าบวม (Infectious coryza)", sample: "หัวไก่ swab จากน้ำมูก น้ำตา", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 3 วัน", method: "Real-time PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "โค", test: "Black leg (Clostridium chauvoei)", sample: "swab จากแผลกล้ามเนื้อที่มีวิการ ของเหลวจากบริเวณวิการ", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ/PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Clostridium perfringens", sample: "ลำไส้ อุจจาระ อาหารสัตว์", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ/PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "บาดทะยัก (Clostridium tetani)", sample: "swab จากแผล ของเหลวจากบริเวณวิการ", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "เพาะแยกเชื้อ/PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "ไข้คิว (Q-fever)", sample: "รก ซากลูกแท้ง น้ำในกระเพาะอาหารลูกแท้ง มดลูก", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 3 วัน", method: "Real-time PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "เลปโตสไปโรซิส (Leptospirosis)", sample: "ไต ปัสสาวะ กระเพาะปัสสาวะ น้ำเชื้อ ตัวอ่อน ลูกแท้ง", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 3 วัน", method: "Real-time PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "Listeria monocytogenes", sample: "อวัยวะภายใน", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 3 วัน", method: "เพาะแยกเชื้อ/PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "มัยโคพลาสมา (Mycoplasmosis)", sample: "สมอง ปอด หัวใจ ข้อที่อักเสบ", transport: "แช่เย็น/แช่แข็ง ส่งทันที", method: "เพาะแยกเชื้อ/PCR", tat: "<30 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "โค", test: "ยูเรียพลาสมา (Ureaplasma diversum)", sample: "vaginal swab รก ซากลูกแท้ง สารคัดหลั่งระบบสืบพันธุ์", transport: "แช่เย็น ส่งทันที (ต้องติดต่อ ศวพ.ฯ ก่อนเก็บตัวอย่าง)", method: "เพาะแยกเชื้อ/PCR", tat: "<30 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "แอสเปอร์จิลโลซิส (Aspergillosis)", sample: "อวัยวะภายใน อาหารสัตว์", transport: "แช่เย็น/แช่แข็ง ส่งภายใน 3 วัน", method: "เพาะแยกเชื้อ", tat: "<14 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ทั่วไป", test: "วัณโรค (Tuberculosis)", sample: "ปอด ต่อมน้ำเหลือง อวัยวะที่มีรอยโรค สารคัดหลั่งทางเดินหายใจ", transport: "แช่เย็น/แช่แข็ง ส่งภายใน 3 วัน", method: "PCR, Real-time PCR", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ผึ้ง", test: "American Foulbrood", sample: "ตัวอ่อนผึ้ง 15 ตัว/รัง/ตัวอย่าง น้ำผึ้ง", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 3 วัน", method: "เพาะแยกเชื้อ/Real-time PCR", tat: "<20 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "ผึ้ง", test: "European Foulbrood", sample: "ตัวอ่อนผึ้ง 15 ตัว/รัง/ตัวอย่าง น้ำผึ้ง", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 3 วัน", method: "เพาะแยกเชื้อ/Real-time PCR", tat: "<20 วันทำการ", iso: "-" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "โค", test: "แท้งติดต่อ (Brucellosis) — แอนติบอดี", sample: "ซีรัม ≥1 ml ไม่มีเม็ดเลือดแดงแตก", transport: "แช่เย็น ส่งภายใน 5 วัน", method: "RBT*/CFT*", tat: "ชันสูตร/ทดสอบ/อ้างอิง/ติดตาม: 8 วัน (1–100 ตย.), 12 วัน (101–500), 15 วัน (501–1,000), 20 วัน (>1,000); สำรวจ/เฝ้าระวัง/วิจัย: 30 วัน", iso: "ได้รับรอง (RBT 250 ตย./คน/สัปดาห์; CFT 50 ตย./คน/สัปดาห์)" },
+            { lab: "แบคทีเรียและเชื้อรา", group: "โค กระบือ", test: "พาราทูเบอร์คูโลซิส (Paratuberculosis) — แอนติบอดี", sample: "ซีรัม ≥1 ml ไม่มีเม็ดเลือดแดงแตก", transport: "แช่เย็น ส่งภายใน 5 วัน", method: "CFT", tat: "<10 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์เคี้ยวเอื้อง", test: "โรคปากและเท้าเปื่อย (FMD)", sample: "อวัยวะที่มีวิการ (เยื่อลิ้น เหงือก กีบ เต้านม กล้ามเนื้อหัวใจ)", transport: "แช่กลีเซอรีนบัฟเฟอร์ ส่งภายใน 5 วัน โดยไม่ต้องแช่เย็น (ถ้าไม่มี ให้แช่เย็น/แช่แข็งแล้วส่งทันที)", method: "Typing ELISA / RT-PCR / Real-time RT-PCR*", tat: "3–5 วันทำการ", iso: "Real-time RT-PCR: ได้รับรอง (200 ตย./วัน; เลือดและน้ำบดเนื้อเยื่อสัตว์กีบคู่)" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์เคี้ยวเอื้อง", test: "FMD — vesicular fluid", sample: "น้ำเหลืองจากตุ่มใส", transport: "ดูดด้วยเข็มและ syringe ปลอดเชื้อ แช่เย็นทันที ส่งภายใน 2 วัน", method: "(ชุดเดียวกับ FMD ข้างต้น)", tat: "3–5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์เคี้ยวเอื้อง", test: "FMD — แอนติบอดีต่อ NSP (FMD-NSP)", sample: "ซีรัม แยกเม็ดเลือดแดง", transport: "แช่เย็น ส่งภายใน 5 วัน หรือแช่แข็ง", method: "NSP-ELISA*", tat: "ไม่เกิน 10 วันทำการ", iso: "ได้รับรอง (150 ตย./วัน)" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์เคี้ยวเอื้อง", test: "FMD — ระดับแอนติบอดี (FMD titer)", sample: "ซีรัม แยกเม็ดเลือดแดง", transport: "แช่เย็น ส่งภายใน 5 วัน หรือแช่แข็ง", method: "LP-ELISA*", tat: "10 วัน (1–50 ตย./วัน); 20 วัน (51–100); 30 วัน (101–150); 50 วัน (>150)", iso: "ได้รับรอง (30 ตย./2 วัน)" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์เคี้ยวเอื้อง", test: "ลัมปี สกิน (LSD)", sample: "EDTA blood ตุ่มนูน/สะเก็ดแผล น้ำมูก อวัยวะ (ปอด ม้าม ไต ลำไส้ ต่อมน้ำเหลือง)", transport: "เลือดส่งทันที/แช่เย็น ส่งภายใน 2 วัน; สะเก็ด น้ำมูก อวัยวะ แช่เย็น", method: "Real-time PCR*", tat: "5 วันทำการ", iso: "ได้รับรอง (200 ตย./วัน)" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์เคี้ยวเอื้อง", test: "LSD — แอนติบอดี", sample: "ซีรัม แยกเม็ดเลือดแดง", transport: "แช่เย็น ส่งภายใน 5 วัน หรือแช่แข็ง", method: "ELISA*", tat: "5–7 วันทำการ", iso: "ได้รับรอง (150 ตย./วัน; ซีรัมโคและกระบือ)" },
+            { lab: "ไวรัสวิทยา", group: "โค กระบือ", test: "BVD", sample: "EDTA blood น้ำมูก nasal swab อวัยวะ (ปอด ม้าม ไต ลำไส้ ต่อมน้ำเหลือง) รกหรือลูกแท้ง", transport: "เลือดส่งทันที/แช่เย็น ส่งภายใน 2 วัน; น้ำมูกหรืออวัยวะ แช่เย็นหรือแช่แข็ง", method: "RT-PCR / Real-time RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "โค กระบือ", test: "IBR", sample: "น้ำมูก nasal swab อวัยวะ (ปอด ม้าม ไต ต่อมน้ำเหลือง) รกหรือลูกแท้ง", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Real-time PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "โค กระบือ", test: "BRSV", sample: "น้ำมูก nasal swab อวัยวะ (ปอด ม้าม ไต ต่อมน้ำเหลือง)", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Real-time RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "โค กระบือ", test: "PI3", sample: "น้ำมูก nasal swab อวัยวะ (ปอด ม้าม ไต ต่อมน้ำเหลือง)", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Nested RT-PCR / Real-time RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "โค กระบือ", test: "Bovine Ephemeral Fever (BEFV)", sample: "EDTA blood น้ำมูก nasal swab อวัยวะ", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Real-time RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "โค", test: "Bovine leukosis", sample: "EDTA blood อวัยวะ (ม้าม ต่อมน้ำเหลือง หรืออวัยวะที่มีวิการ)", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Real-time PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "โค", test: "Bovine Enterovirus (BEV)", sample: "EDTA blood swab (จมูก ช่องคลอด ทวารหนัก; ใน VTM) อุจจาระ น้ำเชื้อ ซากลูกแท้ง อวัยวะ", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Real-time RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "โค", test: "Bovine coronavirus (BCoV)", sample: "EDTA blood อุจจาระ อวัยวะ (ลำไส้ ต่อมน้ำเหลือง)", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Real-time RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "โค", test: "Group A bovine rotavirus (BRV)", sample: "EDTA blood อุจจาระ อวัยวะ (ลำไส้ ต่อมน้ำเหลือง)", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Real-time RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "แพะ แกะ", test: "Small ruminant lentivirus (CAE และ Maedi-visna)", sample: "EDTA blood น้ำในข้อ อวัยวะ (ปอด ม้าม ต่อมน้ำเหลือง สมอง)", transport: "เลือดส่งทันที/แช่เย็น ส่งภายใน 2 วัน; อวัยวะแช่เย็น", method: "Real-time PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "แพะ แกะ", test: "SRLV — แอนติบอดี", sample: "ซีรัม แยกเม็ดเลือดแดง", transport: "แช่เย็น ส่งภายใน 5 วัน หรือแช่แข็ง", method: "ELISA", tat: "5–7 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "แพะ แกะ", test: "PPR", sample: "สำลีป้ายน้ำมูก น้ำตา เยื่อบุช่องปาก/ทวารหนัก EDTA blood อวัยวะ (ต่อมน้ำเหลือง ม้าม ปอด ลำไส้)", transport: "เลือดส่งทันที/แช่เย็น ส่งภายใน 2 วัน; อวัยวะแช่เย็นหรือแช่แข็ง", method: "Real-time RT-PCR", tat: "3–5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "แพะ", test: "โรคปากเปื่อย (Scabby mouth, Orf, Capripoxvirus)", sample: "วิการตุ่มน้ำบริเวณปากหรือจมูก", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Real-time PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์เคี้ยวเอื้อง", test: "Bluetongue virus", sample: "EDTA blood น้ำมูก nasal swab อวัยวะ (ปอด ม้าม ไต ต่อมน้ำเหลือง) รก หรือซากลูกแท้ง", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Real-time PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สุกร", test: "อหิวาต์สุกร (CSF)", sample: "EDTA blood อวัยวะ (ต่อมทอนซิล ไต ม้าม ต่อมน้ำเหลือง)", transport: "เลือดส่งทันที/แช่เย็น ส่งภายใน 2 วัน; อวัยวะแช่เย็นหรือแช่แข็ง", method: "Real-time RT-PCR", tat: "3 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สุกร", test: "อหิวาต์แอฟริกาในสุกร (ASF)", sample: "EDTA blood อวัยวะ (ม้าม)", transport: "เลือดส่งทันที/แช่เย็น ส่งภายใน 2 วัน; อวัยวะแช่เย็นหรือแช่แข็ง", method: "Real-time PCR", tat: "3 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สุกร", test: "พิษสุนัขบ้าเทียม (Aujeszky's disease)", sample: "สมอง ม้าม ต่อมทอนซิล ต่อมน้ำเหลือง", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "PCR", tat: "3 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สุกร", test: "PRRS", sample: "EDTA blood อวัยวะ (ต่อมทอนซิล ปอด ไต ม้าม ต่อมน้ำเหลือง มดลูก) หรือลูกแท้ง", transport: "เลือดส่งทันที/แช่เย็น ส่งภายใน 2 วัน; อวัยวะแช่เย็นหรือแช่แข็ง", method: "Real-time RT-PCR", tat: "3 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สุกร", test: "Porcine circovirus type 2 (PCV2)", sample: "ไต ต่อมทอนซิล ม้าม ต่อมน้ำเหลือง", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Real-time RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สุกร", test: "PED", sample: "ต่อมน้ำเหลือง ลำไส้เล็ก (jejunum, ileum)", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Real-time RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สุกร", test: "TGE", sample: "ต่อมน้ำเหลือง ลำไส้เล็ก (jejunum, ileum)", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Real-time RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สุกร", test: "Porcine parvovirus (PPV)", sample: "ปอด ไต ต่อมน้ำเหลืองของลูกที่แท้ง ของเหลวในตัวลูกที่แท้ง รก", transport: "แช่เย็น ส่งภายใน 2 วัน", method: "PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สุกร", test: "ไข้หวัดใหญ่สุกร (Swine influenza)", sample: "Nasal swab (ก้านสำลีใน VTM) และ/หรืออวัยวะ (ปอด ไต ม้าม ต่อมน้ำเหลือง)", transport: "swab แช่เย็น ส่งทันที; อวัยวะแช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "เพาะแยกเชื้อ / Real-time RT-PCR", tat: "ไม่เกิน 12 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สุกร", test: "FMD (ในสุกร)", sample: "อวัยวะที่มีวิการ; vesicular fluid", transport: "ดูรายการ FMD ของสัตว์เคี้ยวเอื้อง", method: "Typing ELISA / RT-PCR / Real-time RT-PCR*", tat: "3–5 วันทำการ", iso: "ดูรายการ FMD" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์ปีก", test: "ไข้หวัดนก (AI) และนิวคาสเซิล (ND)", sample: "OP / tracheal / cloacal swab และ/หรืออวัยวะ (หลอดลม ปอด ไต ม้าม เบอร์ซา) หรือซากทั้งตัว", transport: "swab ใน VTM แช่เย็น ส่งทันที; อวัยวะ/ซาก แช่เย็นหรือแช่แข็ง", method: "เพาะแยกเชื้อ + HA-HI*; Real-time RT-PCR*", tat: "แยกเชื้อ ≤12 วันทำการ; Real-time RT-PCR ≤5 วันทำการ", iso: "ได้รับรอง (แยกเชื้อ 200 ตย./วัน; Real-time RT-PCR H5/H7/H9 และ ND 200 ตย./วัน; น้ำจากไข่ไก่ฟักก็รับได้)" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์ปีก", test: "แอนติบอดีต่อ AI (H5, H7, H9) และ ND", sample: "ซีรัม แยกเม็ดเลือดแดง", transport: "แช่เย็น ส่งภายใน 5 วัน หรือแช่แข็ง", method: "Haemagglutination inhibition (HI)*", tat: "12 วัน (1–100 ตย.); 20 วัน (101–200); 30 วัน (>200)", iso: "ได้รับรอง (350 ตย./สัปดาห์; ซีรัมไก่)" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์ปีก", test: "แอนติบอดีต่อ AI", sample: "ซีรัม แยกเม็ดเลือดแดง", transport: "แช่เย็น ส่งภายใน 5 วัน หรือแช่แข็ง", method: "Indirect ELISA*", tat: "5 วันทำการ", iso: "ได้รับรอง (150 ตย./วัน; ซีรัมไก่)" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์ปีก", test: "แอนติบอดีต่อ Influenza type A", sample: "ซีรัม แยกเม็ดเลือดแดง", transport: "แช่เย็น ส่งภายใน 5 วัน หรือแช่แข็ง", method: "Indirect ELISA / Competitive ELISA*", tat: "5 วันทำการ", iso: "ได้รับรอง (150 ตย./วัน; ซีรัมไก่ เป็ด หรือนก)" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์ปีก", test: "หลอดลมอักเสบติดต่อ (IB)", sample: "ปอด หลอดลม ไต ม้าม หรือซากทั้งตัว", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "เพาะแยกเชื้อ/RT-PCR", tat: "14 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์ปีก", test: "กล่องเสียงอักเสบติดต่อ (ILT)", sample: "กล่องเสียง ปอด หลอดลม ไต ม้าม น้ำมูก น้ำตา หรือซากทั้งตัว", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "เพาะแยกเชื้อ/RT-PCR", tat: "14 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์ปีก", test: "ฝีดาษไก่ (Fowl pox)", sample: "เม็ดตุ่มที่ผิวหนัง หรืออวัยวะที่มีวิการ หรือซากทั้งตัว", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "เพาะแยกเชื้อ/Nested PCR", tat: "14 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์ปีก", test: "โลหิตจางติดต่อในไก่ (CIA)", sample: "EDTA blood หรืออวัยวะ (ไต ม้าม ตับ หัวใจ ต่อมไทมัส) หรือซากทั้งตัว", transport: "เลือดส่งทันที/แช่เย็น ส่งภายใน 2 วัน; อวัยวะแช่เย็นหรือแช่แข็ง", method: "PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์ปีก", test: "กัมโบโร (IBD)", sample: "ต่อมเบอร์ซา ม้าม ไต หรือซากทั้งตัว", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์ปีก", test: "มาเร็กซ์ (Marek's disease)", sample: "EDTA blood หรืออวัยวะ (ไต ม้าม ตับ) หรือซากทั้งตัว", transport: "เลือดส่งทันที/แช่เย็น ส่งภายใน 2 วัน; อวัยวะและซากแช่เย็นหรือแช่แข็ง", method: "Nested PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์ปีก", test: "Egg drop syndrome (EDS)", sample: "รังไข่ อวัยวะที่ใช้ในการวางไข่ ม้าม ไต หรือซากทั้งตัว", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "เป็ด", test: "Duck egg drop syndrome (Tembusu-related Flavivirus)", sample: "รังไข่ อวัยวะที่ใช้ในการวางไข่ ม้าม ไต สมอง หรือซากทั้งตัว", transport: "แช่เย็น ส่งภายใน 5 วัน หรือแช่แข็ง", method: "RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "เป็ด", test: "กาฬโรคเป็ด (Duck plague)", sample: "หลอดอาหาร ลำไส้ ไต ตับ ม้าม หัวใจ หรือซากทั้งตัว", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "เป็ด", test: "ไวรัสตับอักเสบในเป็ด (DVH)", sample: "ตับ ม้าม ไต หรือซากทั้งตัว", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "ห่าน เป็ดเทศ", test: "พาร์โวไวรัสในห่านและเป็ดเทศ", sample: "ลำไส้ ไต ม้าม ตับ หัวใจ หรือซากทั้งตัว", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "Real-time PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "ม้า", test: "กาฬโรคแอฟริกาในม้า (AHS)", sample: "EDTA blood", transport: "ส่งทันทีหรือแช่เย็น ส่งภายใน 2 วัน", method: "Real-time RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "ม้า", test: "AHS — แอนติบอดี", sample: "ซีรัม แยกเม็ดเลือดแดง", transport: "แช่เย็น ส่งภายใน 5 วัน หรือแช่แข็ง", method: "ELISA", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "ม้า", test: "Equine herpesvirus (EHV)", sample: "EDTA blood หรืออวัยวะที่เกี่ยวข้องกับระบบน้ำเหลือง", transport: "เลือดส่งทันที/แช่เย็น ส่งภายใน 2 วัน; อวัยวะและซากแช่เย็นหรือแช่แข็ง", method: "PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "ม้า", test: "โลหิตจางติดต่อในม้า (EIA)", sample: "ซีรัม แยกเม็ดเลือดแดง", transport: "แช่เย็น ส่งภายใน 5 วัน หรือแช่แข็ง", method: "AGID", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "ม้า", test: "EIA — สารพันธุกรรม", sample: "EDTA blood หรืออวัยวะภายใน", transport: "เลือดส่งทันที/แช่เย็น ส่งภายใน 2 วัน; อวัยวะแช่เย็นหรือแช่แข็ง", method: "PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "ช้าง", test: "EEHV", sample: "น้ำล้างงวงช้าง หรือ swab จากงวง เยื่อบุตา เพดานปาก อวัยวะเพศตัวเมีย", transport: "แช่เย็น ส่งภายใน 2 วัน", method: "Nested PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์เลี้ยงลูกด้วยนม", test: "พิษสุนัขบ้า (Rabies)", sample: "หัวสุนัข แมว หรือหัวสัตว์เลี้ยงลูกด้วยนม", transport: "ซากทั้งตัวหรือหัว บรรจุถุงมิดชิดอย่างน้อย 2 ชั้น แช่เย็นหรือแช่แข็ง ส่งทันที", method: "DFA*; Real-time RT-PCR", tat: "3 วันทำการ (ถ้าพบเชื้อรายงานทันทีทางโทรศัพท์)", iso: "DFA ได้รับรอง (20 ตย./วัน; สมองสัตว์เลี้ยงลูกด้วยนม)" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์เลี้ยงลูกด้วยนม", test: "โควิด-19 (Covid-19)", sample: "swab ช่องจมูก เยื่อบุด้านหลังโพรงจมูก ทวารหนัก หรือพื้นผิวที่ปนเปื้อน", transport: "ก้านสำลีใน VTM บรรจุถุงมิดชิดอย่างน้อย 2 ชั้น แช่เย็น ส่งทันที", method: "Real-time RT-PCR", tat: "3 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "สัตว์เลี้ยงลูกด้วยนม", test: "ฝีดาษลิง (Monkeypox)", sample: "swab จากรอยโรคที่ผิวหนัง สะเก็ดแผล หรือ EDTA blood", transport: "swab ใน VTM; ตัวอย่างอื่นบรรจุถุงมิดชิดอย่างน้อย 2 ชั้น แช่เย็น ส่งทันที", method: "Nested PCR", tat: "3 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "จิ้งหรีด", test: "Cricket iridovirus", sample: "จิ้งหรีดทั้งตัว", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "จิ้งหรีด", test: "Cricket paralysis virus", sample: "จิ้งหรีดทั้งตัว", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ไวรัสวิทยา", group: "ผึ้ง", test: "Sacbrood virus", sample: "ตัวอ่อนผึ้ง", transport: "แช่เย็น ส่งภายใน 2 วัน หรือแช่แข็ง", method: "RT-PCR", tat: "5 วันทำการ", iso: "-" },
+            { lab: "ปรสิตวิทยา", group: "ทั่วไป", test: "การตรวจหาไข่พยาธิ", sample: "อุจจาระสด ~20 g หรือส่วนลำไส้ผูกปลาย", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "Flotation และ Sedimentation", tat: "ขึ้นกับจำนวนตัวอย่าง (10 ตย./วัน)", iso: "-" },
+            { lab: "ปรสิตวิทยา", group: "สัตว์ปีก", test: "การตรวจหาไข่พยาธิในสัตว์ปีก", sample: "อุจจาระแช่ฟอร์มาลิน 10%", transport: "อุณหภูมิห้อง ส่งภายใน 2 วัน", method: "Direct smear", tat: "ขึ้นกับจำนวนตัวอย่าง (10 ตย./วัน)", iso: "-" },
+            { lab: "ปรสิตวิทยา", group: "ทั่วไป", test: "ตัวอ่อนพยาธิทริคิเนลลา (Trichinella sp.)", sample: "กล้ามเนื้อกะบังลม ลิ้น ระหว่างซี่โครง คอ แก้ม ส่วนละ ≥5 g ระบุตำแหน่ง", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "Compression และ Artificial digestion", tat: "ขึ้นกับจำนวนตัวอย่าง (2 ตย./วัน)", iso: "-" },
+            { lab: "ปรสิตวิทยา", group: "ทั่วไป", test: "พยาธิภายนอก (Ectoparasite)", sample: "ตัวพยาธิ สะเก็ดที่ขูดจากผิวหนัง", transport: "แช่แอลกอฮอล์ 70% อุณหภูมิห้อง", method: "Identification", tat: "4–10 วันทำการ", iso: "-" },
+            { lab: "ปรสิตวิทยา", group: "ทั่วไป", test: "พยาธิในเลือด", sample: "เลือดสดในสารกันเลือดแข็ง", transport: "แช่เย็น ส่งถึงห้องปฏิบัติการภายใน 6–8 ชม.", method: "Wet blood smear และ Woo's method", tat: "ขึ้นกับจำนวนตัวอย่าง (20 ตย./วัน)", iso: "-" },
+            { lab: "ปรสิตวิทยา", group: "ทั่วไป", test: "พยาธิในเลือด — สไลด์", sample: "เลือดป้ายสไลด์แบบบาง โบกให้แห้งทันที", transport: "เก็บในภาชนะมิดชิด", method: "Giemsa-stained blood smear", tat: "ขึ้นกับจำนวนตัวอย่าง (20 ตย./วัน)", iso: "-" },
+            { lab: "ปรสิตวิทยา", group: "ทั่วไป", test: "แอนติบอดีต่อ Trypanosoma evansi", sample: "ซีรัม", transport: "แช่เย็น ส่งถึงห้องปฏิบัติการภายใน 6–8 ชม.", method: "Card Agglutination Test for Trypanosomiasis", tat: "ขึ้นกับจำนวนตัวอย่าง (30 ตย./วัน)", iso: "-" },
+            { lab: "ปรสิตวิทยา", group: "ผึ้ง", test: "ปรสิตในผึ้ง", sample: "ผึ้งตัวเต็มวัย ~100 ตัว ในภาชนะปิดมิดชิด", transport: "แช่เย็น ส่งภายใน 24 ชม.", method: "Bee examination", tat: "ขึ้นกับจำนวนตัวอย่าง (8 ตย./วัน)", iso: "-" },
+            { lab: "ชีวเคมีและพิษวิทยา", group: "ทั่วไป", test: "Ca, Mg, P, Total protein, Albumin, ALP", sample: "ซีรัม ≥0.5 ml (ตามจำนวนรายการ) ไม่มีเม็ดเลือดแดงแตก", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 5 วัน", method: "Colorimetric method (เครื่อง A-25), Spectrophotometric", tat: "10 วันทำการ", iso: "-" },
+            { lab: "ชีวเคมีและพิษวิทยา", group: "ทั่วไป", test: "ALT, AST, Bilirubin, BUN, Creatinine, Creatine kinase, Glucose, Cholinesterase", sample: "ซีรัม ≥0.5 ml ไม่มีเม็ดเลือดแดงแตก", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 5 วัน", method: "Spectrophotometric method", tat: "10 วันทำการ", iso: "-" },
+            { lab: "ชีวเคมีและพิษวิทยา", group: "ทั่วไป", test: "สารพิษ: คาร์บาเมต ออร์กาโนฟอสเฟต ไซยาไนด์ ไพรีทรอยด์ สารกำจัดวัชพืช (paraquat, propanil, 2,4-D ฯลฯ)", sample: "อาหารในกระเพาะ/ลำไส้ ตับ อาหารสัตว์ หญ้า น้ำ 100–200 g", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 5 วัน", method: "ChE inhibition, Spectrophotometric, HPLC, GC, LC-MS/MS, GC-MS/MS", tat: "15 วันทำการ", iso: "-" },
+            { lab: "ชีวเคมีและพิษวิทยา", group: "ทั่วไป", test: "Glyphosate, Paraquat", sample: "(ตัวอย่างชุดเดียวกับสารพิษ)", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 5 วัน", method: "HPLC, LC-MS/MS, Chemical test", tat: "15 วันทำการ", iso: "-" },
+            { lab: "ชีวเคมีและพิษวิทยา", group: "ทั่วไป", test: "Formalin, Nitrate, Nitrite, Cyanide", sample: "(ตัวอย่างชุดเดียวกับสารพิษ)", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 5 วัน", method: "Chemical test", tat: "15 วันทำการ", iso: "-" },
+            { lab: "ชีวเคมีและพิษวิทยา", group: "ทั่วไป", test: "โลหะหนัก (Heavy metals)", sample: "(ตัวอย่างชุดเดียวกับสารพิษ)", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 5 วัน", method: "Electrochemistry, HPLC", tat: "15 วันทำการ", iso: "-" },
+            { lab: "ชีวเคมีและพิษวิทยา", group: "ทั่วไป", test: "สารพิษไม่ทราบชนิด", sample: "อาหารในกระเพาะ/ลำไส้ ตับ อาหารสัตว์ หญ้า น้ำ 100–200 g", transport: "แช่เย็น ส่งภายใน 24 ชม./แช่แข็ง ส่งภายใน 5 วัน", method: "LC-MS/MS, GC-MS/MS", tat: "15 วันทำการ", iso: "-" },
+            { lab: "ชีวเคมีและพิษวิทยา", group: "ทั่วไป", test: "สารพิษจากเชื้อรา (Aflatoxin, Zearalenone, Ochratoxin, Deoxynivalenol, Gliotoxin)", sample: "อาหารสัตว์ 200 g ใส่ถุงพลาสติก", transport: "ไม่ต้องแช่เย็น", method: "HPLC, LC-MS/MS", tat: "15 วันทำการ", iso: "-" }
+        ];
+
+        const guidelinesData = [
+            { cat: "1", title: "ซีรัม (Serum)", desc: "ใช้หลอดสะอาดและแห้ง (Plain tube) ปล่อยให้เลือดแข็งตัว 4-6 ชั่วโมงที่อุณหภูมิห้อง แยกซีรัมใสสีเหลืองอ่อน ปริมาตรไม่น้อยกว่า 1 มล. ห้ามฮีโมไลซิส (ไม่แดง ไม่ขุ่น) ส่งทันทีหรือแช่เย็น/แช่แข็งรอส่ง" },
+            { cat: "2", title: "เลือด EDTA", desc: "เก็บตามขีดปริมาณข้างหลอด พลิกหลอดเบาๆ ให้เข้ากับสารกันเลือดแข็ง แช่เย็น 4°C ห้ามแช่แข็งเด็ดขาด ส่งตรวจ CBC หรือ PCR ภายใน 24 ชั่วโมง" },
+            { cat: "3", title: "เลือดป้ายสไลด์ & อุจจาระ", desc: "สไลด์เลือด: ป้ายบางโบกให้แห้งเร็ว เขียนเลขด้วยดินสอ ไม่ต้องแช่เย็น ยึดกล่องกันแตก | อุจจาระ: แยกถุงต่อตัว สัตว์กินเนื้อ ~10g สัตว์เคี้ยวเอื้อง 2 เท่า แช่เย็น 4°C ส่งภายใน 2 วัน" },
+            { cat: "4", title: "Swab (สิ่งคัดหลั่ง)", desc: "ใช้ Transport media ทุกครั้ง (ยกเว้น Q-fever) แช่ปลายสำลีใน media แล้วหักก้านทิ้ง ใช้หลักปลอดเชื้อ ปิดจุกสนิท ถุงสองชั้น แช่เย็น 4°C ในกระติกน้ำแข็ง" },
+            { cat: "5", title: "ซากและอวัยวะ", desc: "เลือกซากตายใหม่ๆ หรือสัตว์ป่วยในฝูง แท้งลูกส่งทั้งตัวพร้อมรก แยกถุงอวัยวะละ 1 ถุง (หัวใจ, ปอด, ตับ, ม้าม, ไต) แช่เย็น 4°C ส่งภายใน 24-48 ชม. (เกิน 48 ชม. อนุโลมแช่แข็ง)" },
+            { cat: "6", title: "ตัวอย่างทางจุลพยาธิวิทยา (ฟอร์มาลิน)", desc: "ชิ้นเนื้อสดหนาประมาณ 0.5 ซม. แช่ 10% Buffered formalin ปริมาตร 10 เท่าของชิ้นเนื้อ ขวดปิดสนิทตั้งตรง ห้ามแช่เย็นหรือแช่แข็ง" },
+            { cat: "7", title: "ปัสสาวะ (Leptospirosis)", desc: "เก็บช่วงกลาง (mid-stream) ล้างบริเวณทางเปิดให้สะอาด ใช้ขวดปลอดเชื้อ เก็บหลังสัตว์แสดงอาการแล้วประมาณ 2 สัปดาห์ แช่เย็นหรือแช่แข็ง ส่งภายใน 1 สัปดาห์" },
+            { cat: "8", title: "ตัวอย่างสิ่งแวดล้อม & สารพิษ", desc: "อาหารสัตว์/หญ้า/น้ำ (~200g), เลือดในสารกันเลือดแข็ง (2 ml) | กรณีเสียชีวิต: ตับ อาหารในทางเดินอาหาร (~200g)" }
+        ];
+
+        const rejectionData = [
+            { type: "เกณฑ์ปฏิเสธตัวอย่าง", title: "ตัวอย่างเน่า/เสื่อมสภาพ", desc: "ซากหรืออวัยวะที่มีกลิ่นเน่า เปลี่ยนสี เหลวตัว หรือมีหนอนแมลงวัน ไม่สามารถอ่านรอยโรคทางจุลพยาธิวิทยาได้" },
+            { type: "เกณฑ์ปฏิเสธตัวอย่าง", title: "ปริมาณไม่เพียงพอ", desc: "ปริมาณตัวอย่างน้อยกว่าขีดความสามารถขั้นต่ำที่กำหนดในการทดสอบแต่ละวิธี" },
+            { type: "เกณฑ์ปฏิเสธตัวอย่าง", title: "ภาชนะบรรจุชำรุด", desc: "ภาชนะแตกหัก รั่วซึม ปิดฝาไม่สนิท เสี่ยงต่อการปนเปื้อนแพร่กระจายเชื้อหรือทำให้ตัวอย่างแห้งขอด" },
+            { type: "เกณฑ์ปฏิเสธตัวอย่าง", title: "ข้อมูลไม่ตรงกับ LIMS", desc: "ป้ายระบุตัวอย่างไม่ตรงกับใบนำส่งหรือข้อมูลในระบบอิเล็กทรอนิกส์ LIMS (https://lims.dld.go.th)" },
+            { type: "เกณฑ์ปฏิเสธตัวอย่าง", title: "การเก็บรักษาผิดวิธี", desc: "เช่น เลือด EDTA นำไปแช่แข็งทำให้เม็ดเลือดแตก (Hemolysis) จนไม่สามารถนับเม็ดเลือดอัตโนมัติได้" },
+            { type: "ข้อกำหนดคุณภาพ", title: "ซากและอวัยวะสด", desc: "ต้องเก็บความเย็น 4°C บรรจุถุงพลาสติกสะอาดอย่างน้อย 2 ชั้น ป้องกันการรั่วซึมระหว่างขนส่ง" },
+            { type: "ข้อกำหนดคุณภาพ", title: "การลงระบบ LIMS", desc: "บันทึกข้อมูลโครงการเฝ้าระวัง (เช่น โครงการ GAP, Brucella, FMD) และใส่อีเมลแจ้งผลเพิ่มเติมให้ชัดเจน" }
+        ];
+
+        const productQualityData = [
+            { category: "น้ำนมดิบ", test: "TPC, Coliform, Lab pasteurization, Reduction test", sample: "น้ำนมดิบ 200 ml ขวดปิดสนิท ถุง 2 ชั้น", transport: "แช่เย็น ส่งภายใน 24 ชม.", tat: "8 วันทำการ" },
+            { category: "น้ำนมดิบ", test: "องค์ประกอบน้ำนม (Fat, Protein, SNF, Somatic cell)", sample: "น้ำนมดิบ 40 ml", transport: "แช่เย็น ส่งภายใน 24 ชม.", tat: "8 วันทำการ" },
+            { category: "เนื้อสัตว์", test: "Aerobic plate count, E. coli, S. aureus, Salmonella", sample: "เนื้อสัตว์ ≥300 g (จุลชีววิทยา) ถุง 2 ชั้น", transport: "แช่เย็น/แช่แข็ง ส่งภายใน 24 ชม.", tat: "10 วันทำการ" },
+            { category: "ไข่สด", test: "Salmonella spp., สารต้านจุลชีพตกค้าง", sample: "ไข่ไก่/ไข่เป็ด ≥12 ฟอง / นกกระทา ≥50 ฟอง", transport: "แช่เย็นเท่านั้น ห้ามแช่แข็ง ส่งภายใน 24 ชม.", tat: "10 วันทำการ" },
+            { category: "สารเร่งเนื้อแดง", test: "Clenbuterol, Salbutamol (ปัสสาวะ/เนื้อ)", sample: "ปัสสาวะ ≥40 ml หรือเนื้อไม่ติดมัน ≥500 g", transport: "แช่เย็น/แช่แข็ง ส่งภายใน 24 ชม.", tat: "7 วันทำการ" },
+            { category: "อาหารสัตว์", test: "Aflatoxins, ยาปฏิชีวนะ, สารเคมี", sample: "อาหารสัตว์ 500 g จำนวน 2 ถุง", transport: "อุณหภูมิห้อง ส่งภายใน 14 วัน", tat: "10 วันทำการ" }
+        ];
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
+                btn.classList.add('text-slate-600', 'hover:bg-slate-100');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-100');
+            activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
+        }
+
+        function filterDiseases() {
+            const species = document.getElementById('speciesFilter').value;
+            const system1 = document.getElementById('systemFilter').value;
+            const system2 = document.getElementById('systemFilter2').value;
+
+            const filtered = diseaseData.filter(item => {
+                const matchSpecies = !species || item.species.includes(species);
+                const matchSys1 = !system1 || item.system.includes(system1);
+                const matchSys2 = !system2 || item.system.includes(system2);
+                return matchSpecies && matchSys1 && matchSys2;
+            });
+
+            document.getElementById('matchCount').innerText = filtered.length;
+            const container = document.getElementById('diseaseResultsList');
+            const summaryContainer = document.getElementById('consolidatedSummary');
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-500">
+                        <i class="fa-solid fa-folder-open text-3xl mb-2 text-slate-300"></i>
+                        <p class="font-medium">ไม่พบโรคที่ตรงกับเงื่อนไขการค้นหา</p>
+                        <p class="text-xs text-slate-400 mt-1">แนะนำให้ตรวจสอบตัวกรอง หรืออ้างอิงคู่มือการเก็บตัวอย่างมาตรฐาน 8 หมวดในแท็บที่ 3</p>
+                    </div>
+                `;
+                summaryContainer.innerHTML = `<p class="italic text-blue-300">ไม่พบโรคตามเงื่อนไข แนะนำใช้คู่มือมาตรฐาน 8 หมวด</p>`;
+                return;
+            }
+
+            let html = '';
+            let sampleCategoryMap = new Map();
+
+            filtered.forEach((item) => {
+                html += `
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:border-blue-300 transition">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-1 rounded-lg">${item.species}</span>
+                                <span class="bg-slate-100 text-slate-700 text-[11px] font-medium px-2.5 py-1 rounded-lg"><i class="fa-solid fa-tag mr-1 text-slate-400"></i>${item.system}</span>
+                            </div>
+                            <span class="bg-emerald-50 text-emerald-700 text-[11px] font-semibold px-2 py-0.5 rounded-md border border-emerald-200">TAT: ${item.tat}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-1">${item.disease}</h4>
+                        <p class="text-xs text-slate-600 mb-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100"><strong class="text-slate-700">อาการและรอยโรคสำคัญ:</strong> ${item.symptoms}</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs bg-blue-50/50 p-3 rounded-xl border border-blue-100">
+                            <div>
+                                <span class="font-semibold text-blue-900 block mb-0.5"><i class="fa-solid fa-vial mr-1 text-blue-600"></i>ตัวอย่างที่ต้องเก็บ:</span>
+                                <span class="text-slate-700">${item.sample}</span>
+                            </div>
+                            <div>
+                                <span class="font-semibold text-blue-900 block mb-0.5"><i class="fa-solid fa-temperature-arrow-down mr-1 text-blue-600"></i>การเก็บรักษา & วิธีตรวจ:</span>
+                                <span class="text-slate-700"><strong>วิธีตรวจ:</strong> ${item.method}<br><strong>การเก็บรักษา/ขนส่ง:</strong> ${item.transport}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                const samplesArr = item.sample.split(';');
+                samplesArr.forEach(s => {
+                    let rawS = s.trim();
+                    if (!rawS) return;
+
+                    const lowerS = rawS.toLowerCase();
+                    const isOrganOrCarcass = lowerS.includes("อวัยวะ") || lowerS.includes("ปอด") || lowerS.includes("ม้าม") || lowerS.includes("สมอง") || lowerS.includes("หัวใจ") || lowerS.includes("ไต") || lowerS.includes("ทอนซิล") || lowerS.includes("ลำไส้") || lowerS.includes("ซาก") || lowerS.includes("อวัยวะรวม") || lowerS.includes("ต่อมน้ำเหลือง") || lowerS.includes("ตับ") || lowerS.includes("หลอดลม");
+                    
+                    let catName = "ตัวอย่างอื่นๆ";
+                    let cleanSampleText = rawS;
+
+                    if (lowerS.includes("edta")) {
+                        catName = "เลือด EDTA";
+                        cleanSampleText = rawS.replace(/อวัยวะ.*|ปอด.*|ม้าม.*|สมอง.*|หัวใจ.*|ไต.*|ทอนซิล.*|ลำไส้.*|ซาก.*/gi, '').trim();
+                        if (!cleanSampleText || cleanSampleText.length < 3) cleanSampleText = "เลือด EDTA ≥1 ml";
+                    } else if (lowerS.includes("ซีรัม") || lowerS.includes("พลาสมา") || lowerS.includes("clotted blood")) {
+                        catName = "ซีรัม / เลือดสด (Plain Tube)";
+                        cleanSampleText = rawS.replace(/อวัยวะ.*|ปอด.*|ม้าม.*|สมอง.*|หัวใจ.*|ไต.*|ทอนซิล.*|ลำไส้.*|ซาก.*/gi, '').trim();
+                        if (!cleanSampleText || cleanSampleText.length < 3) cleanSampleText = "ซีรัม / เลือดสด ≥1 ml";
+                    } else if (lowerS.includes("swab") || lowerS.includes("น้ำมูก") || lowerS.includes("น้ำตา") || lowerS.includes("oral fluid") || lowerS.includes("saliva")) {
+                        catName = "Swab สิ่งคัดหลั่ง / สารคัดหลั่ง (VTM)";
+                        cleanSampleText = rawS.replace(/อวัยวะ.*|ปอด.*|ม้าม.*|สมอง.*|หัวใจ.*|ไต.*|ทอนซิล.*|ลำไส้.*|ซาก.*/gi, '').trim();
+                        if (!cleanSampleText || cleanSampleText.length < 3) cleanSampleText = "Swab สิ่งคัดหลั่งใน VTM";
+                    } else if (isOrganOrCarcass) {
+                        catName = "ซากสัตว์ / อวัยวะภายใน / อวัยวะรวม";
+                        cleanSampleText = `${item.disease}: ${rawS}`;
+                    } else if (lowerS.includes("สะเก็ด") || lowerS.includes("ตุ่ม") || lowerS.includes("วิการ") || lowerS.includes("vesicular")) {
+                        catName = "สะเก็ดแผล / เนื้อเยื่อรอยโรค / น้ำจากตุ่มใส";
+                    } else if (lowerS.includes("อุจจาระ") || lowerS.includes("rectal")) {
+                        catName = "อุจจาระ / Rectal Swab";
+                    } else if (lowerS.includes("น้ำเชื้อ") || lowerS.includes("รก") || lowerS.includes("ลูกแท้ง") || lowerS.includes("ลูกกรอก")) {
+                        catName = "ตัวอย่างระบบสืบพันธุ์ (รก / ลูกแท้ง / น้ำเชื้อ)";
+                    }
+
+                    if (!sampleCategoryMap.has(catName)) {
+                        sampleCategoryMap.set(catName, {
+                            samples: new Set([cleanSampleText]),
+                            transports: new Set([item.transport.trim()])
+                        });
+                    } else {
+                        const entry = sampleCategoryMap.get(catName);
+                        entry.samples.add(cleanSampleText);
+                        entry.transports.add(item.transport.trim());
+                    }
+                });
+            });
+
+            container.innerHTML = html;
+
+            let summaryHtml = `<div class="space-y-3">`;
+            summaryHtml += `<p class="font-bold text-blue-200 border-b border-blue-700/50 pb-1 text-xs"><i class="fa-solid fa-boxes-stacked mr-1"></i>สรุปชนิดตัวอย่างที่ต้องเตรียม (${sampleCategoryMap.size} ประเภทหลัก):</p>`;
+
+            let hasOrganOrCarcass = false;
+            let organDetails = [];
+
+            filtered.forEach(item => {
+                const s = item.sample.toLowerCase();
+                if (s.includes("อวัยวะ") || s.includes("ปอด") || s.includes("ม้าม") || s.includes("สมอง") || s.includes("หัวใจ") || s.includes("ไต") || s.includes("ทอนซิล") || s.includes("ลำไส้") || s.includes("ซาก") || s.includes("อวัยวะรวม")) {
+                    hasOrganOrCarcass = true;
+                    organDetails.push({
+                        disease: item.disease,
+                        sample: item.sample,
+                        transport: item.transport
+                    });
+                }
+            });
+
+            sampleCategoryMap.forEach((val, catName) => {
+                const sampleList = Array.from(val.samples).join("<br>• ");
+                const transportList = Array.from(val.transports).join("<br>• ");
+
+                summaryHtml += `
+                    <div class="bg-blue-950/60 p-2.5 rounded-xl border border-blue-700/50 space-y-1">
+                        <div class="font-bold text-emerald-300 text-xs flex items-center">
+                            <i class="fa-solid fa-circle-check text-[10px] mr-1.5"></i>${catName}
+                        </div>
+                        <div class="text-[11px] text-slate-200 pl-3">
+                            <strong class="text-blue-300">ตัวอย่าง:</strong> • ${sampleList}
+                        </div>
+                        <div class="text-[11px] text-slate-300 pl-3 bg-blue-900/40 p-1.5 rounded-lg border border-blue-800/40 mt-1">
+                            <strong class="text-amber-300"><i class="fa-solid fa-snowflake mr-1"></i>วิธีเก็บรักษา/ขนส่ง:</strong><br>• ${transportList}
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (hasOrganOrCarcass) {
+                summaryHtml += `
+                    <div class="bg-amber-950/70 border border-amber-500/60 p-3 rounded-xl space-y-2 mt-3">
+                        <div class="font-bold text-amber-300 text-xs flex items-center">
+                            <i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i>ข้อแนะนำการเก็บตัวอย่างอวัยวะ / อวัยวะรวม / ซากสัตว์
+                        </div>
+                        <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                `;
+
+                organDetails.forEach(od => {
+                    summaryHtml += `
+                        <div class="bg-black/30 p-2 rounded-lg border border-amber-500/30 text-[11px]">
+                            <span class="font-bold text-amber-200">${od.disease}:</span><br>
+                            <span class="text-slate-200">📌 <strong>อวัยวะที่ต้องเก็บ:</strong> ${od.sample}</span><br>
+                            <span class="text-amber-300">❄️ <strong>การเก็บรักษา:</strong> ${od.transport}</span>
+                        </div>
+                    `;
+                });
+
+                summaryHtml += `
+                        </div>
+                        <div class="text-[10px] text-amber-200 bg-amber-900/40 p-2 rounded-lg border border-amber-700/40 leading-relaxed">
+                            💡 <strong>แนวทางการเก็บตัวอย่าง:</strong> บรรจุถุงพลาสติกสะอาดอย่างน้อย 2 ชั้น แยก 1 อวัยวะต่อ 1 ถุง แช่เย็น 4°C ส่งภายใน 24–48 ชม. (หากเกิน 48 ชม. ให้แช่แข็ง) ตามเงื่อนไขความปลอดภัยทางชีวภาพ (Biosafety)
+                        </div>
+                    </div>
+                `;
+            }
+
+            summaryHtml += `</div>`;
+            summaryContainer.innerHTML = summaryHtml;
+        }
+
+        function resetFilters() {
+            document.getElementById('speciesFilter').value = '';
+            document.getElementById('systemFilter').value = '';
+            document.getElementById('systemFilter2').value = '';
+            filterDiseases();
+        }
+
+        function renderLimsTable(data) {
+            const tbody = document.getElementById('limsTableBody');
+            let html = '';
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-500">ไม่พบรายการทดสอบที่ตรงกับการค้นหา</td></tr>`;
+                return;
+            }
+            data.forEach((item, index) => {
+                html += `
+                    <tr class="hover:bg-slate-50 border-b border-slate-100 transition">
+                        <td class="p-3 font-medium text-slate-500 text-center">${index + 1}</td>
+                        <td class="p-3 font-semibold text-blue-900">${item.lab}</td>
+                        <td class="p-3"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[11px] font-medium">${item.group}</span></td>
+                        <td class="p-3 font-bold text-slate-800">${item.test}</td>
+                        <td class="p-3 text-slate-600">${item.sample}</td>
+                        <td class="p-3 text-slate-600">${item.transport}</td>
+                        <td class="p-3 text-slate-600 font-mono text-[11px]">${item.method}</td>
+                        <td class="p-3 font-semibold text-slate-700">${item.tat}</td>
+                        <td class="p-3"><span class="${item.iso !== '-' ? 'bg-emerald-100 text-emerald-800 font-semibold' : 'text-slate-400'} px-2 py-0.5 rounded text-[11px]">${item.iso}</span></td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function searchLimsTable() {
+            const query = document.getElementById('limsSearch').value.toLowerCase();
+            const filtered = limsData.filter(item => 
+                item.lab.toLowerCase().includes(query) ||
+                item.group.toLowerCase().includes(query) ||
+                item.test.toLowerCase().includes(query) ||
+                item.sample.toLowerCase().includes(query) ||
+                item.method.toLowerCase().includes(query) ||
+                item.tat.toLowerCase().includes(query)
+            );
+            renderLimsTable(filtered);
+        }
+
+        function renderGuidelines() {
+            const container = document.getElementById('guidelinesContainer');
+            let html = '';
+            guidelinesData.forEach(item => {
+                html += `
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <span class="bg-indigo-600 text-white font-bold text-xs w-7 h-7 rounded-xl flex items-center justify-center shrink-0 shadow-sm">${item.cat}</span>
+                            <h4 class="font-bold text-slate-900 text-base">${item.title}</h4>
+                        </div>
+                        <p class="text-xs text-slate-600 pl-10 leading-relaxed">${item.desc}</p>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderRejectionAndProducts() {
+            const rejContainer = document.getElementById('rejectionContainer');
+            let rejHtml = '';
+            rejectionData.forEach(item => {
+                const isRej = item.type === "เกณฑ์ปฏิเสธตัวอย่าง";
+                rejHtml += `
+                    <div class="p-3.5 rounded-xl border ${isRej ? 'bg-red-50/50 border-red-200 text-red-900' : 'bg-emerald-50/50 border-emerald-200 text-emerald-900'} text-xs">
+                        <div class="flex items-center space-x-2 font-bold mb-1">
+                            <i class="fa-solid ${isRej ? 'fa-circle-xmark text-red-600' : 'fa-circle-check text-emerald-600'}"></i>
+                            <span>${item.title}</span>
+                            <span class="text-[10px] font-normal px-2 py-0.5 rounded-full ${isRej ? 'bg-red-200/60 text-red-800' : 'bg-emerald-200/60 text-emerald-800'} ml-auto">${item.type}</span>
+                        </div>
+                        <p class="pl-5 text-slate-700">${item.desc}</p>
+                    </div>
+                `;
+            });
+            rejContainer.innerHTML = rejHtml;
+
+            const prodContainer = document.getElementById('productQualityContainer');
+            let prodHtml = '';
+            productQualityData.forEach(item => {
+                prodHtml += `
+                    <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-xl text-xs space-y-1">
+                        <div class="flex justify-between items-center font-bold text-slate-900">
+                            <span><i class="fa-solid fa-box text-emerald-600 mr-1.5"></i>${item.category}: ${item.test}</span>
+                            <span class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded">TAT: ${item.tat}</span>
+                        </div>
+                        <p class="text-slate-600 pl-5"><strong>ตัวอย่าง:</strong> ${item.sample}</p>
+                        <p class="text-slate-600 pl-5"><strong>การขนส่ง:</strong> ${item.transport}</p>
+                    </div>
+                `;
+            });
+            prodContainer.innerHTML = prodHtml;
+        }
+
+        window.onload = function() {
+            filterDiseases();
+            renderLimsTable(limsData);
+            renderGuidelines();
+            renderRejectionAndProducts();
+        };
+    </script>
+</body>
+</html>
